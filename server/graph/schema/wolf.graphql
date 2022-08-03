@@ -1,0 +1,28 @@
+"""
+A Player
+"""
+type Player {
+    
+
+
+}
+
+type StartGameInput {
+    Name: String!
+}
+
+type Game {
+    Id:   ID!
+    Name: String!
+}
+
+type RegisterPlayerInput {
+
+}
+
+
+extend type Mutation {
+    StartNewGame(input StartGameInput): Game!
+}
+
+
