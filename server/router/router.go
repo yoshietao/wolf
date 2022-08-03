@@ -25,7 +25,7 @@ func Register(db *sql.DB) *gin.Engine {
 
 	routes := []HandlerEntry{
 		{
-			Path:   "Status",
+			Path:   "status",
 			Method: http.MethodGet,
 			Functions: []gin.HandlerFunc{
 				GetStatusHandler(db),
