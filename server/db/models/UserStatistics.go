@@ -22,78 +22,78 @@ import (
 	"github.com/volatiletech/strmangle"
 )
 
-// Player is an object representing the database table.
-type Player struct {
+// UserStatistic is an object representing the database table.
+type UserStatistic struct {
 	ID          int         `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
 	UserId      null.Int    `boil:"UserId" json:"UserId,omitempty" toml:"UserId" yaml:"UserId,omitempty"`
 	GameId      null.Int    `boil:"GameId" json:"GameId,omitempty" toml:"GameId" yaml:"GameId,omitempty"`
+	Date        null.Time   `boil:"Date" json:"Date,omitempty" toml:"Date" yaml:"Date,omitempty"`
 	SeatId      null.Int    `boil:"SeatId" json:"SeatId,omitempty" toml:"SeatId" yaml:"SeatId,omitempty"`
 	CharacterId null.Int    `boil:"CharacterId" json:"CharacterId,omitempty" toml:"CharacterId" yaml:"CharacterId,omitempty"`
-	Status      null.String `boil:"Status" json:"Status,omitempty" toml:"Status" yaml:"Status,omitempty"`
 	Result      null.String `boil:"Result" json:"Result,omitempty" toml:"Result" yaml:"Result,omitempty"`
 
-	R *playerR `boil:"-" json:"-" toml:"-" yaml:"-"`
-	L playerL  `boil:"-" json:"-" toml:"-" yaml:"-"`
+	R *userStatisticR `boil:"-" json:"-" toml:"-" yaml:"-"`
+	L userStatisticL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
-var PlayerColumns = struct {
+var UserStatisticColumns = struct {
 	ID          string
 	UserId      string
 	GameId      string
+	Date        string
 	SeatId      string
 	CharacterId string
-	Status      string
 	Result      string
 }{
 	ID:          "Id",
 	UserId:      "UserId",
 	GameId:      "GameId",
+	Date:        "Date",
 	SeatId:      "SeatId",
 	CharacterId: "CharacterId",
-	Status:      "Status",
 	Result:      "Result",
 }
 
-var PlayerTableColumns = struct {
+var UserStatisticTableColumns = struct {
 	ID          string
 	UserId      string
 	GameId      string
+	Date        string
 	SeatId      string
 	CharacterId string
-	Status      string
 	Result      string
 }{
-	ID:          "Player.Id",
-	UserId:      "Player.UserId",
-	GameId:      "Player.GameId",
-	SeatId:      "Player.SeatId",
-	CharacterId: "Player.CharacterId",
-	Status:      "Player.Status",
-	Result:      "Player.Result",
+	ID:          "UserStatistics.Id",
+	UserId:      "UserStatistics.UserId",
+	GameId:      "UserStatistics.GameId",
+	Date:        "UserStatistics.Date",
+	SeatId:      "UserStatistics.SeatId",
+	CharacterId: "UserStatistics.CharacterId",
+	Result:      "UserStatistics.Result",
 }
 
 // Generated where
 
-var PlayerWhere = struct {
+var UserStatisticWhere = struct {
 	ID          whereHelperint
 	UserId      whereHelpernull_Int
 	GameId      whereHelpernull_Int
+	Date        whereHelpernull_Time
 	SeatId      whereHelpernull_Int
 	CharacterId whereHelpernull_Int
-	Status      whereHelpernull_String
 	Result      whereHelpernull_String
 }{
-	ID:          whereHelperint{field: "`Player`.`Id`"},
-	UserId:      whereHelpernull_Int{field: "`Player`.`UserId`"},
-	GameId:      whereHelpernull_Int{field: "`Player`.`GameId`"},
-	SeatId:      whereHelpernull_Int{field: "`Player`.`SeatId`"},
-	CharacterId: whereHelpernull_Int{field: "`Player`.`CharacterId`"},
-	Status:      whereHelpernull_String{field: "`Player`.`Status`"},
-	Result:      whereHelpernull_String{field: "`Player`.`Result`"},
+	ID:          whereHelperint{field: "`UserStatistics`.`Id`"},
+	UserId:      whereHelpernull_Int{field: "`UserStatistics`.`UserId`"},
+	GameId:      whereHelpernull_Int{field: "`UserStatistics`.`GameId`"},
+	Date:        whereHelpernull_Time{field: "`UserStatistics`.`Date`"},
+	SeatId:      whereHelpernull_Int{field: "`UserStatistics`.`SeatId`"},
+	CharacterId: whereHelpernull_Int{field: "`UserStatistics`.`CharacterId`"},
+	Result:      whereHelpernull_String{field: "`UserStatistics`.`Result`"},
 }
 
-// PlayerRels is where relationship names are stored.
-var PlayerRels = struct {
+// UserStatisticRels is where relationship names are stored.
+var UserStatisticRels = struct {
 	UserIdUser            string
 	CharacterIdCharacterR string
 	GameIdGame            string
@@ -103,73 +103,73 @@ var PlayerRels = struct {
 	GameIdGame:            "GameIdGame",
 }
 
-// playerR is where relationships are stored.
-type playerR struct {
+// userStatisticR is where relationships are stored.
+type userStatisticR struct {
 	UserIdUser            *User       `boil:"UserIdUser" json:"UserIdUser" toml:"UserIdUser" yaml:"UserIdUser"`
 	CharacterIdCharacterR *CharacterR `boil:"CharacterIdCharacterR" json:"CharacterIdCharacterR" toml:"CharacterIdCharacterR" yaml:"CharacterIdCharacterR"`
 	GameIdGame            *Game       `boil:"GameIdGame" json:"GameIdGame" toml:"GameIdGame" yaml:"GameIdGame"`
 }
 
 // NewStruct creates a new relationship struct
-func (*playerR) NewStruct() *playerR {
-	return &playerR{}
+func (*userStatisticR) NewStruct() *userStatisticR {
+	return &userStatisticR{}
 }
 
-func (r *playerR) GetUserIdUser() *User {
+func (r *userStatisticR) GetUserIdUser() *User {
 	if r == nil {
 		return nil
 	}
 	return r.UserIdUser
 }
 
-func (r *playerR) GetCharacterIdCharacterR() *CharacterR {
+func (r *userStatisticR) GetCharacterIdCharacterR() *CharacterR {
 	if r == nil {
 		return nil
 	}
 	return r.CharacterIdCharacterR
 }
 
-func (r *playerR) GetGameIdGame() *Game {
+func (r *userStatisticR) GetGameIdGame() *Game {
 	if r == nil {
 		return nil
 	}
 	return r.GameIdGame
 }
 
-// playerL is where Load methods for each relationship are stored.
-type playerL struct{}
+// userStatisticL is where Load methods for each relationship are stored.
+type userStatisticL struct{}
 
 var (
-	playerAllColumns            = []string{"Id", "UserId", "GameId", "SeatId", "CharacterId", "Status", "Result"}
-	playerColumnsWithoutDefault = []string{"UserId", "GameId", "SeatId", "CharacterId", "Status", "Result"}
-	playerColumnsWithDefault    = []string{"Id"}
-	playerPrimaryKeyColumns     = []string{"Id"}
-	playerGeneratedColumns      = []string{}
+	userStatisticAllColumns            = []string{"Id", "UserId", "GameId", "Date", "SeatId", "CharacterId", "Result"}
+	userStatisticColumnsWithoutDefault = []string{"UserId", "GameId", "Date", "SeatId", "CharacterId", "Result"}
+	userStatisticColumnsWithDefault    = []string{"Id"}
+	userStatisticPrimaryKeyColumns     = []string{"Id"}
+	userStatisticGeneratedColumns      = []string{}
 )
 
 type (
-	// PlayerSlice is an alias for a slice of pointers to Player.
-	// This should almost always be used instead of []Player.
-	PlayerSlice []*Player
-	// PlayerHook is the signature for custom Player hook methods
-	PlayerHook func(context.Context, boil.ContextExecutor, *Player) error
+	// UserStatisticSlice is an alias for a slice of pointers to UserStatistic.
+	// This should almost always be used instead of []UserStatistic.
+	UserStatisticSlice []*UserStatistic
+	// UserStatisticHook is the signature for custom UserStatistic hook methods
+	UserStatisticHook func(context.Context, boil.ContextExecutor, *UserStatistic) error
 
-	playerQuery struct {
+	userStatisticQuery struct {
 		*queries.Query
 	}
 )
 
 // Cache for insert, update and upsert
 var (
-	playerType                 = reflect.TypeOf(&Player{})
-	playerMapping              = queries.MakeStructMapping(playerType)
-	playerPrimaryKeyMapping, _ = queries.BindMapping(playerType, playerMapping, playerPrimaryKeyColumns)
-	playerInsertCacheMut       sync.RWMutex
-	playerInsertCache          = make(map[string]insertCache)
-	playerUpdateCacheMut       sync.RWMutex
-	playerUpdateCache          = make(map[string]updateCache)
-	playerUpsertCacheMut       sync.RWMutex
-	playerUpsertCache          = make(map[string]insertCache)
+	userStatisticType                 = reflect.TypeOf(&UserStatistic{})
+	userStatisticMapping              = queries.MakeStructMapping(userStatisticType)
+	userStatisticPrimaryKeyMapping, _ = queries.BindMapping(userStatisticType, userStatisticMapping, userStatisticPrimaryKeyColumns)
+	userStatisticInsertCacheMut       sync.RWMutex
+	userStatisticInsertCache          = make(map[string]insertCache)
+	userStatisticUpdateCacheMut       sync.RWMutex
+	userStatisticUpdateCache          = make(map[string]updateCache)
+	userStatisticUpsertCacheMut       sync.RWMutex
+	userStatisticUpsertCache          = make(map[string]insertCache)
 )
 
 var (
@@ -180,27 +180,27 @@ var (
 	_ = qmhelper.Where
 )
 
-var playerAfterSelectHooks []PlayerHook
+var userStatisticAfterSelectHooks []UserStatisticHook
 
-var playerBeforeInsertHooks []PlayerHook
-var playerAfterInsertHooks []PlayerHook
+var userStatisticBeforeInsertHooks []UserStatisticHook
+var userStatisticAfterInsertHooks []UserStatisticHook
 
-var playerBeforeUpdateHooks []PlayerHook
-var playerAfterUpdateHooks []PlayerHook
+var userStatisticBeforeUpdateHooks []UserStatisticHook
+var userStatisticAfterUpdateHooks []UserStatisticHook
 
-var playerBeforeDeleteHooks []PlayerHook
-var playerAfterDeleteHooks []PlayerHook
+var userStatisticBeforeDeleteHooks []UserStatisticHook
+var userStatisticAfterDeleteHooks []UserStatisticHook
 
-var playerBeforeUpsertHooks []PlayerHook
-var playerAfterUpsertHooks []PlayerHook
+var userStatisticBeforeUpsertHooks []UserStatisticHook
+var userStatisticAfterUpsertHooks []UserStatisticHook
 
 // doAfterSelectHooks executes all "after Select" hooks.
-func (o *Player) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerAfterSelectHooks {
+	for _, hook := range userStatisticAfterSelectHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -210,12 +210,12 @@ func (o *Player) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecut
 }
 
 // doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Player) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerBeforeInsertHooks {
+	for _, hook := range userStatisticBeforeInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -225,12 +225,12 @@ func (o *Player) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Player) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerAfterInsertHooks {
+	for _, hook := range userStatisticAfterInsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -240,12 +240,12 @@ func (o *Player) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecut
 }
 
 // doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Player) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerBeforeUpdateHooks {
+	for _, hook := range userStatisticBeforeUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -255,12 +255,12 @@ func (o *Player) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Player) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerAfterUpdateHooks {
+	for _, hook := range userStatisticAfterUpdateHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -270,12 +270,12 @@ func (o *Player) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecut
 }
 
 // doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Player) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerBeforeDeleteHooks {
+	for _, hook := range userStatisticBeforeDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -285,12 +285,12 @@ func (o *Player) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Player) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerAfterDeleteHooks {
+	for _, hook := range userStatisticAfterDeleteHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -300,12 +300,12 @@ func (o *Player) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecut
 }
 
 // doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Player) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerBeforeUpsertHooks {
+	for _, hook := range userStatisticBeforeUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -315,12 +315,12 @@ func (o *Player) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecu
 }
 
 // doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Player) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
+func (o *UserStatistic) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
 	if boil.HooksAreSkipped(ctx) {
 		return nil
 	}
 
-	for _, hook := range playerAfterUpsertHooks {
+	for _, hook := range userStatisticAfterUpsertHooks {
 		if err := hook(ctx, exec, o); err != nil {
 			return err
 		}
@@ -329,33 +329,33 @@ func (o *Player) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecut
 	return nil
 }
 
-// AddPlayerHook registers your hook function for all future operations.
-func AddPlayerHook(hookPoint boil.HookPoint, playerHook PlayerHook) {
+// AddUserStatisticHook registers your hook function for all future operations.
+func AddUserStatisticHook(hookPoint boil.HookPoint, userStatisticHook UserStatisticHook) {
 	switch hookPoint {
 	case boil.AfterSelectHook:
-		playerAfterSelectHooks = append(playerAfterSelectHooks, playerHook)
+		userStatisticAfterSelectHooks = append(userStatisticAfterSelectHooks, userStatisticHook)
 	case boil.BeforeInsertHook:
-		playerBeforeInsertHooks = append(playerBeforeInsertHooks, playerHook)
+		userStatisticBeforeInsertHooks = append(userStatisticBeforeInsertHooks, userStatisticHook)
 	case boil.AfterInsertHook:
-		playerAfterInsertHooks = append(playerAfterInsertHooks, playerHook)
+		userStatisticAfterInsertHooks = append(userStatisticAfterInsertHooks, userStatisticHook)
 	case boil.BeforeUpdateHook:
-		playerBeforeUpdateHooks = append(playerBeforeUpdateHooks, playerHook)
+		userStatisticBeforeUpdateHooks = append(userStatisticBeforeUpdateHooks, userStatisticHook)
 	case boil.AfterUpdateHook:
-		playerAfterUpdateHooks = append(playerAfterUpdateHooks, playerHook)
+		userStatisticAfterUpdateHooks = append(userStatisticAfterUpdateHooks, userStatisticHook)
 	case boil.BeforeDeleteHook:
-		playerBeforeDeleteHooks = append(playerBeforeDeleteHooks, playerHook)
+		userStatisticBeforeDeleteHooks = append(userStatisticBeforeDeleteHooks, userStatisticHook)
 	case boil.AfterDeleteHook:
-		playerAfterDeleteHooks = append(playerAfterDeleteHooks, playerHook)
+		userStatisticAfterDeleteHooks = append(userStatisticAfterDeleteHooks, userStatisticHook)
 	case boil.BeforeUpsertHook:
-		playerBeforeUpsertHooks = append(playerBeforeUpsertHooks, playerHook)
+		userStatisticBeforeUpsertHooks = append(userStatisticBeforeUpsertHooks, userStatisticHook)
 	case boil.AfterUpsertHook:
-		playerAfterUpsertHooks = append(playerAfterUpsertHooks, playerHook)
+		userStatisticAfterUpsertHooks = append(userStatisticAfterUpsertHooks, userStatisticHook)
 	}
 }
 
-// One returns a single player record from the query.
-func (q playerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Player, error) {
-	o := &Player{}
+// One returns a single userStatistic record from the query.
+func (q userStatisticQuery) One(ctx context.Context, exec boil.ContextExecutor) (*UserStatistic, error) {
+	o := &UserStatistic{}
 
 	queries.SetLimit(q.Query, 1)
 
@@ -364,7 +364,7 @@ func (q playerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Playe
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: failed to execute a one query for Player")
+		return nil, errors.Wrap(err, "models: failed to execute a one query for UserStatistics")
 	}
 
 	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
@@ -374,16 +374,16 @@ func (q playerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Playe
 	return o, nil
 }
 
-// All returns all Player records from the query.
-func (q playerQuery) All(ctx context.Context, exec boil.ContextExecutor) (PlayerSlice, error) {
-	var o []*Player
+// All returns all UserStatistic records from the query.
+func (q userStatisticQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserStatisticSlice, error) {
+	var o []*UserStatistic
 
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
-		return nil, errors.Wrap(err, "models: failed to assign all query results to Player slice")
+		return nil, errors.Wrap(err, "models: failed to assign all query results to UserStatistic slice")
 	}
 
-	if len(playerAfterSelectHooks) != 0 {
+	if len(userStatisticAfterSelectHooks) != 0 {
 		for _, obj := range o {
 			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
 				return o, err
@@ -394,8 +394,8 @@ func (q playerQuery) All(ctx context.Context, exec boil.ContextExecutor) (Player
 	return o, nil
 }
 
-// Count returns the count of all Player records in the query.
-func (q playerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+// Count returns the count of all UserStatistic records in the query.
+func (q userStatisticQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,14 +403,14 @@ func (q playerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int6
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to count Player rows")
+		return 0, errors.Wrap(err, "models: failed to count UserStatistics rows")
 	}
 
 	return count, nil
 }
 
 // Exists checks if the row exists in the table.
-func (q playerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q userStatisticQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -419,14 +419,14 @@ func (q playerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (boo
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return false, errors.Wrap(err, "models: failed to check if Player exists")
+		return false, errors.Wrap(err, "models: failed to check if UserStatistics exists")
 	}
 
 	return count > 0, nil
 }
 
 // UserIdUser pointed to by the foreign key.
-func (o *Player) UserIdUser(mods ...qm.QueryMod) userQuery {
+func (o *UserStatistic) UserIdUser(mods ...qm.QueryMod) userQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`Id` = ?", o.UserId),
 	}
@@ -437,7 +437,7 @@ func (o *Player) UserIdUser(mods ...qm.QueryMod) userQuery {
 }
 
 // CharacterIdCharacterR pointed to by the foreign key.
-func (o *Player) CharacterIdCharacterR(mods ...qm.QueryMod) characterRQuery {
+func (o *UserStatistic) CharacterIdCharacterR(mods ...qm.QueryMod) characterRQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`Id` = ?", o.CharacterId),
 	}
@@ -448,7 +448,7 @@ func (o *Player) CharacterIdCharacterR(mods ...qm.QueryMod) characterRQuery {
 }
 
 // GameIdGame pointed to by the foreign key.
-func (o *Player) GameIdGame(mods ...qm.QueryMod) gameQuery {
+func (o *UserStatistic) GameIdGame(mods ...qm.QueryMod) gameQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`Id` = ?", o.GameId),
 	}
@@ -460,28 +460,28 @@ func (o *Player) GameIdGame(mods ...qm.QueryMod) gameQuery {
 
 // LoadUserIdUser allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
-func (playerL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singular bool, maybePlayer interface{}, mods queries.Applicator) error {
-	var slice []*Player
-	var object *Player
+func (userStatisticL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUserStatistic interface{}, mods queries.Applicator) error {
+	var slice []*UserStatistic
+	var object *UserStatistic
 
 	if singular {
 		var ok bool
-		object, ok = maybePlayer.(*Player)
+		object, ok = maybeUserStatistic.(*UserStatistic)
 		if !ok {
-			object = new(Player)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybePlayer)
+			object = new(UserStatistic)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUserStatistic)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybePlayer))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUserStatistic))
 			}
 		}
 	} else {
-		s, ok := maybePlayer.(*[]*Player)
+		s, ok := maybeUserStatistic.(*[]*UserStatistic)
 		if ok {
 			slice = *s
 		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybePlayer)
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUserStatistic)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybePlayer))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUserStatistic))
 			}
 		}
 	}
@@ -489,7 +489,7 @@ func (playerL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singu
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &playerR{}
+			object.R = &userStatisticR{}
 		}
 		if !queries.IsNil(object.UserId) {
 			args = append(args, object.UserId)
@@ -499,7 +499,7 @@ func (playerL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singu
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &playerR{}
+				obj.R = &userStatisticR{}
 			}
 
 			for _, a := range args {
@@ -544,7 +544,7 @@ func (playerL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for User")
 	}
 
-	if len(playerAfterSelectHooks) != 0 {
+	if len(userStatisticAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -562,7 +562,7 @@ func (playerL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singu
 		if foreign.R == nil {
 			foreign.R = &userR{}
 		}
-		foreign.R.UserIdPlayers = append(foreign.R.UserIdPlayers, object)
+		foreign.R.UserIdUserStatistics = append(foreign.R.UserIdUserStatistics, object)
 		return nil
 	}
 
@@ -573,7 +573,7 @@ func (playerL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singu
 				if foreign.R == nil {
 					foreign.R = &userR{}
 				}
-				foreign.R.UserIdPlayers = append(foreign.R.UserIdPlayers, local)
+				foreign.R.UserIdUserStatistics = append(foreign.R.UserIdUserStatistics, local)
 				break
 			}
 		}
@@ -584,28 +584,28 @@ func (playerL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor, singu
 
 // LoadCharacterIdCharacterR allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
-func (playerL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExecutor, singular bool, maybePlayer interface{}, mods queries.Applicator) error {
-	var slice []*Player
-	var object *Player
+func (userStatisticL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUserStatistic interface{}, mods queries.Applicator) error {
+	var slice []*UserStatistic
+	var object *UserStatistic
 
 	if singular {
 		var ok bool
-		object, ok = maybePlayer.(*Player)
+		object, ok = maybeUserStatistic.(*UserStatistic)
 		if !ok {
-			object = new(Player)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybePlayer)
+			object = new(UserStatistic)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUserStatistic)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybePlayer))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUserStatistic))
 			}
 		}
 	} else {
-		s, ok := maybePlayer.(*[]*Player)
+		s, ok := maybeUserStatistic.(*[]*UserStatistic)
 		if ok {
 			slice = *s
 		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybePlayer)
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUserStatistic)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybePlayer))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUserStatistic))
 			}
 		}
 	}
@@ -613,7 +613,7 @@ func (playerL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExec
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &playerR{}
+			object.R = &userStatisticR{}
 		}
 		if !queries.IsNil(object.CharacterId) {
 			args = append(args, object.CharacterId)
@@ -623,7 +623,7 @@ func (playerL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExec
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &playerR{}
+				obj.R = &userStatisticR{}
 			}
 
 			for _, a := range args {
@@ -668,7 +668,7 @@ func (playerL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExec
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for CharacterR")
 	}
 
-	if len(playerAfterSelectHooks) != 0 {
+	if len(userStatisticAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -686,7 +686,7 @@ func (playerL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExec
 		if foreign.R == nil {
 			foreign.R = &characterRR{}
 		}
-		foreign.R.CharacterIdPlayers = append(foreign.R.CharacterIdPlayers, object)
+		foreign.R.CharacterIdUserStatistics = append(foreign.R.CharacterIdUserStatistics, object)
 		return nil
 	}
 
@@ -697,7 +697,7 @@ func (playerL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExec
 				if foreign.R == nil {
 					foreign.R = &characterRR{}
 				}
-				foreign.R.CharacterIdPlayers = append(foreign.R.CharacterIdPlayers, local)
+				foreign.R.CharacterIdUserStatistics = append(foreign.R.CharacterIdUserStatistics, local)
 				break
 			}
 		}
@@ -708,28 +708,28 @@ func (playerL) LoadCharacterIdCharacterR(ctx context.Context, e boil.ContextExec
 
 // LoadGameIdGame allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
-func (playerL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singular bool, maybePlayer interface{}, mods queries.Applicator) error {
-	var slice []*Player
-	var object *Player
+func (userStatisticL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singular bool, maybeUserStatistic interface{}, mods queries.Applicator) error {
+	var slice []*UserStatistic
+	var object *UserStatistic
 
 	if singular {
 		var ok bool
-		object, ok = maybePlayer.(*Player)
+		object, ok = maybeUserStatistic.(*UserStatistic)
 		if !ok {
-			object = new(Player)
-			ok = queries.SetFromEmbeddedStruct(&object, &maybePlayer)
+			object = new(UserStatistic)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeUserStatistic)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybePlayer))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeUserStatistic))
 			}
 		}
 	} else {
-		s, ok := maybePlayer.(*[]*Player)
+		s, ok := maybeUserStatistic.(*[]*UserStatistic)
 		if ok {
 			slice = *s
 		} else {
-			ok = queries.SetFromEmbeddedStruct(&slice, maybePlayer)
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeUserStatistic)
 			if !ok {
-				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybePlayer))
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeUserStatistic))
 			}
 		}
 	}
@@ -737,7 +737,7 @@ func (playerL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singu
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &playerR{}
+			object.R = &userStatisticR{}
 		}
 		if !queries.IsNil(object.GameId) {
 			args = append(args, object.GameId)
@@ -747,7 +747,7 @@ func (playerL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singu
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &playerR{}
+				obj.R = &userStatisticR{}
 			}
 
 			for _, a := range args {
@@ -792,7 +792,7 @@ func (playerL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for Game")
 	}
 
-	if len(playerAfterSelectHooks) != 0 {
+	if len(userStatisticAfterSelectHooks) != 0 {
 		for _, obj := range resultSlice {
 			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
 				return err
@@ -810,7 +810,7 @@ func (playerL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singu
 		if foreign.R == nil {
 			foreign.R = &gameR{}
 		}
-		foreign.R.GameIdPlayers = append(foreign.R.GameIdPlayers, object)
+		foreign.R.GameIdUserStatistics = append(foreign.R.GameIdUserStatistics, object)
 		return nil
 	}
 
@@ -821,7 +821,7 @@ func (playerL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singu
 				if foreign.R == nil {
 					foreign.R = &gameR{}
 				}
-				foreign.R.GameIdPlayers = append(foreign.R.GameIdPlayers, local)
+				foreign.R.GameIdUserStatistics = append(foreign.R.GameIdUserStatistics, local)
 				break
 			}
 		}
@@ -830,10 +830,10 @@ func (playerL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor, singu
 	return nil
 }
 
-// SetUserIdUser of the player to the related item.
+// SetUserIdUser of the userStatistic to the related item.
 // Sets o.R.UserIdUser to related.
-// Adds o to related.R.UserIdPlayers.
-func (o *Player) SetUserIdUser(ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+// Adds o to related.R.UserIdUserStatistics.
+func (o *UserStatistic) SetUserIdUser(ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -842,9 +842,9 @@ func (o *Player) SetUserIdUser(ctx context.Context, exec boil.ContextExecutor, i
 	}
 
 	updateQuery := fmt.Sprintf(
-		"UPDATE `Player` SET %s WHERE %s",
+		"UPDATE `UserStatistics` SET %s WHERE %s",
 		strmangle.SetParamNames("`", "`", 0, []string{"UserId"}),
-		strmangle.WhereClause("`", "`", 0, playerPrimaryKeyColumns),
+		strmangle.WhereClause("`", "`", 0, userStatisticPrimaryKeyColumns),
 	)
 	values := []interface{}{related.ID, o.ID}
 
@@ -859,7 +859,7 @@ func (o *Player) SetUserIdUser(ctx context.Context, exec boil.ContextExecutor, i
 
 	queries.Assign(&o.UserId, related.ID)
 	if o.R == nil {
-		o.R = &playerR{
+		o.R = &userStatisticR{
 			UserIdUser: related,
 		}
 	} else {
@@ -868,10 +868,10 @@ func (o *Player) SetUserIdUser(ctx context.Context, exec boil.ContextExecutor, i
 
 	if related.R == nil {
 		related.R = &userR{
-			UserIdPlayers: PlayerSlice{o},
+			UserIdUserStatistics: UserStatisticSlice{o},
 		}
 	} else {
-		related.R.UserIdPlayers = append(related.R.UserIdPlayers, o)
+		related.R.UserIdUserStatistics = append(related.R.UserIdUserStatistics, o)
 	}
 
 	return nil
@@ -880,7 +880,7 @@ func (o *Player) SetUserIdUser(ctx context.Context, exec boil.ContextExecutor, i
 // RemoveUserIdUser relationship.
 // Sets o.R.UserIdUser to nil.
 // Removes o from all passed in related items' relationships struct.
-func (o *Player) RemoveUserIdUser(ctx context.Context, exec boil.ContextExecutor, related *User) error {
+func (o *UserStatistic) RemoveUserIdUser(ctx context.Context, exec boil.ContextExecutor, related *User) error {
 	var err error
 
 	queries.SetScanner(&o.UserId, nil)
@@ -895,25 +895,25 @@ func (o *Player) RemoveUserIdUser(ctx context.Context, exec boil.ContextExecutor
 		return nil
 	}
 
-	for i, ri := range related.R.UserIdPlayers {
+	for i, ri := range related.R.UserIdUserStatistics {
 		if queries.Equal(o.UserId, ri.UserId) {
 			continue
 		}
 
-		ln := len(related.R.UserIdPlayers)
+		ln := len(related.R.UserIdUserStatistics)
 		if ln > 1 && i < ln-1 {
-			related.R.UserIdPlayers[i] = related.R.UserIdPlayers[ln-1]
+			related.R.UserIdUserStatistics[i] = related.R.UserIdUserStatistics[ln-1]
 		}
-		related.R.UserIdPlayers = related.R.UserIdPlayers[:ln-1]
+		related.R.UserIdUserStatistics = related.R.UserIdUserStatistics[:ln-1]
 		break
 	}
 	return nil
 }
 
-// SetCharacterIdCharacterR of the player to the related item.
+// SetCharacterIdCharacterR of the userStatistic to the related item.
 // Sets o.R.CharacterIdCharacterR to related.
-// Adds o to related.R.CharacterIdPlayers.
-func (o *Player) SetCharacterIdCharacterR(ctx context.Context, exec boil.ContextExecutor, insert bool, related *CharacterR) error {
+// Adds o to related.R.CharacterIdUserStatistics.
+func (o *UserStatistic) SetCharacterIdCharacterR(ctx context.Context, exec boil.ContextExecutor, insert bool, related *CharacterR) error {
 	var err error
 	if insert {
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -922,9 +922,9 @@ func (o *Player) SetCharacterIdCharacterR(ctx context.Context, exec boil.Context
 	}
 
 	updateQuery := fmt.Sprintf(
-		"UPDATE `Player` SET %s WHERE %s",
+		"UPDATE `UserStatistics` SET %s WHERE %s",
 		strmangle.SetParamNames("`", "`", 0, []string{"CharacterId"}),
-		strmangle.WhereClause("`", "`", 0, playerPrimaryKeyColumns),
+		strmangle.WhereClause("`", "`", 0, userStatisticPrimaryKeyColumns),
 	)
 	values := []interface{}{related.ID, o.ID}
 
@@ -939,7 +939,7 @@ func (o *Player) SetCharacterIdCharacterR(ctx context.Context, exec boil.Context
 
 	queries.Assign(&o.CharacterId, related.ID)
 	if o.R == nil {
-		o.R = &playerR{
+		o.R = &userStatisticR{
 			CharacterIdCharacterR: related,
 		}
 	} else {
@@ -948,10 +948,10 @@ func (o *Player) SetCharacterIdCharacterR(ctx context.Context, exec boil.Context
 
 	if related.R == nil {
 		related.R = &characterRR{
-			CharacterIdPlayers: PlayerSlice{o},
+			CharacterIdUserStatistics: UserStatisticSlice{o},
 		}
 	} else {
-		related.R.CharacterIdPlayers = append(related.R.CharacterIdPlayers, o)
+		related.R.CharacterIdUserStatistics = append(related.R.CharacterIdUserStatistics, o)
 	}
 
 	return nil
@@ -960,7 +960,7 @@ func (o *Player) SetCharacterIdCharacterR(ctx context.Context, exec boil.Context
 // RemoveCharacterIdCharacterR relationship.
 // Sets o.R.CharacterIdCharacterR to nil.
 // Removes o from all passed in related items' relationships struct.
-func (o *Player) RemoveCharacterIdCharacterR(ctx context.Context, exec boil.ContextExecutor, related *CharacterR) error {
+func (o *UserStatistic) RemoveCharacterIdCharacterR(ctx context.Context, exec boil.ContextExecutor, related *CharacterR) error {
 	var err error
 
 	queries.SetScanner(&o.CharacterId, nil)
@@ -975,25 +975,25 @@ func (o *Player) RemoveCharacterIdCharacterR(ctx context.Context, exec boil.Cont
 		return nil
 	}
 
-	for i, ri := range related.R.CharacterIdPlayers {
+	for i, ri := range related.R.CharacterIdUserStatistics {
 		if queries.Equal(o.CharacterId, ri.CharacterId) {
 			continue
 		}
 
-		ln := len(related.R.CharacterIdPlayers)
+		ln := len(related.R.CharacterIdUserStatistics)
 		if ln > 1 && i < ln-1 {
-			related.R.CharacterIdPlayers[i] = related.R.CharacterIdPlayers[ln-1]
+			related.R.CharacterIdUserStatistics[i] = related.R.CharacterIdUserStatistics[ln-1]
 		}
-		related.R.CharacterIdPlayers = related.R.CharacterIdPlayers[:ln-1]
+		related.R.CharacterIdUserStatistics = related.R.CharacterIdUserStatistics[:ln-1]
 		break
 	}
 	return nil
 }
 
-// SetGameIdGame of the player to the related item.
+// SetGameIdGame of the userStatistic to the related item.
 // Sets o.R.GameIdGame to related.
-// Adds o to related.R.GameIdPlayers.
-func (o *Player) SetGameIdGame(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Game) error {
+// Adds o to related.R.GameIdUserStatistics.
+func (o *UserStatistic) SetGameIdGame(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Game) error {
 	var err error
 	if insert {
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -1002,9 +1002,9 @@ func (o *Player) SetGameIdGame(ctx context.Context, exec boil.ContextExecutor, i
 	}
 
 	updateQuery := fmt.Sprintf(
-		"UPDATE `Player` SET %s WHERE %s",
+		"UPDATE `UserStatistics` SET %s WHERE %s",
 		strmangle.SetParamNames("`", "`", 0, []string{"GameId"}),
-		strmangle.WhereClause("`", "`", 0, playerPrimaryKeyColumns),
+		strmangle.WhereClause("`", "`", 0, userStatisticPrimaryKeyColumns),
 	)
 	values := []interface{}{related.ID, o.ID}
 
@@ -1019,7 +1019,7 @@ func (o *Player) SetGameIdGame(ctx context.Context, exec boil.ContextExecutor, i
 
 	queries.Assign(&o.GameId, related.ID)
 	if o.R == nil {
-		o.R = &playerR{
+		o.R = &userStatisticR{
 			GameIdGame: related,
 		}
 	} else {
@@ -1028,10 +1028,10 @@ func (o *Player) SetGameIdGame(ctx context.Context, exec boil.ContextExecutor, i
 
 	if related.R == nil {
 		related.R = &gameR{
-			GameIdPlayers: PlayerSlice{o},
+			GameIdUserStatistics: UserStatisticSlice{o},
 		}
 	} else {
-		related.R.GameIdPlayers = append(related.R.GameIdPlayers, o)
+		related.R.GameIdUserStatistics = append(related.R.GameIdUserStatistics, o)
 	}
 
 	return nil
@@ -1040,7 +1040,7 @@ func (o *Player) SetGameIdGame(ctx context.Context, exec boil.ContextExecutor, i
 // RemoveGameIdGame relationship.
 // Sets o.R.GameIdGame to nil.
 // Removes o from all passed in related items' relationships struct.
-func (o *Player) RemoveGameIdGame(ctx context.Context, exec boil.ContextExecutor, related *Game) error {
+func (o *UserStatistic) RemoveGameIdGame(ctx context.Context, exec boil.ContextExecutor, related *Game) error {
 	var err error
 
 	queries.SetScanner(&o.GameId, nil)
@@ -1055,67 +1055,67 @@ func (o *Player) RemoveGameIdGame(ctx context.Context, exec boil.ContextExecutor
 		return nil
 	}
 
-	for i, ri := range related.R.GameIdPlayers {
+	for i, ri := range related.R.GameIdUserStatistics {
 		if queries.Equal(o.GameId, ri.GameId) {
 			continue
 		}
 
-		ln := len(related.R.GameIdPlayers)
+		ln := len(related.R.GameIdUserStatistics)
 		if ln > 1 && i < ln-1 {
-			related.R.GameIdPlayers[i] = related.R.GameIdPlayers[ln-1]
+			related.R.GameIdUserStatistics[i] = related.R.GameIdUserStatistics[ln-1]
 		}
-		related.R.GameIdPlayers = related.R.GameIdPlayers[:ln-1]
+		related.R.GameIdUserStatistics = related.R.GameIdUserStatistics[:ln-1]
 		break
 	}
 	return nil
 }
 
-// Players retrieves all the records using an executor.
-func Players(mods ...qm.QueryMod) playerQuery {
-	mods = append(mods, qm.From("`Player`"))
+// UserStatistics retrieves all the records using an executor.
+func UserStatistics(mods ...qm.QueryMod) userStatisticQuery {
+	mods = append(mods, qm.From("`UserStatistics`"))
 	q := NewQuery(mods...)
 	if len(queries.GetSelect(q)) == 0 {
-		queries.SetSelect(q, []string{"`Player`.*"})
+		queries.SetSelect(q, []string{"`UserStatistics`.*"})
 	}
 
-	return playerQuery{q}
+	return userStatisticQuery{q}
 }
 
-// FindPlayer retrieves a single record by ID with an executor.
+// FindUserStatistic retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindPlayer(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Player, error) {
-	playerObj := &Player{}
+func FindUserStatistic(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*UserStatistic, error) {
+	userStatisticObj := &UserStatistic{}
 
 	sel := "*"
 	if len(selectCols) > 0 {
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from `Player` where `Id`=?", sel,
+		"select %s from `UserStatistics` where `Id`=?", sel,
 	)
 
 	q := queries.Raw(query, iD)
 
-	err := q.Bind(ctx, exec, playerObj)
+	err := q.Bind(ctx, exec, userStatisticObj)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: unable to select from Player")
+		return nil, errors.Wrap(err, "models: unable to select from UserStatistics")
 	}
 
-	if err = playerObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return playerObj, err
+	if err = userStatisticObj.doAfterSelectHooks(ctx, exec); err != nil {
+		return userStatisticObj, err
 	}
 
-	return playerObj, nil
+	return userStatisticObj, nil
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Player) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (o *UserStatistic) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no Player provided for insertion")
+		return errors.New("models: no UserStatistics provided for insertion")
 	}
 
 	var err error
@@ -1124,39 +1124,39 @@ func (o *Player) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 		return err
 	}
 
-	nzDefaults := queries.NonZeroDefaultSet(playerColumnsWithDefault, o)
+	nzDefaults := queries.NonZeroDefaultSet(userStatisticColumnsWithDefault, o)
 
 	key := makeCacheKey(columns, nzDefaults)
-	playerInsertCacheMut.RLock()
-	cache, cached := playerInsertCache[key]
-	playerInsertCacheMut.RUnlock()
+	userStatisticInsertCacheMut.RLock()
+	cache, cached := userStatisticInsertCache[key]
+	userStatisticInsertCacheMut.RUnlock()
 
 	if !cached {
 		wl, returnColumns := columns.InsertColumnSet(
-			playerAllColumns,
-			playerColumnsWithDefault,
-			playerColumnsWithoutDefault,
+			userStatisticAllColumns,
+			userStatisticColumnsWithDefault,
+			userStatisticColumnsWithoutDefault,
 			nzDefaults,
 		)
 
-		cache.valueMapping, err = queries.BindMapping(playerType, playerMapping, wl)
+		cache.valueMapping, err = queries.BindMapping(userStatisticType, userStatisticMapping, wl)
 		if err != nil {
 			return err
 		}
-		cache.retMapping, err = queries.BindMapping(playerType, playerMapping, returnColumns)
+		cache.retMapping, err = queries.BindMapping(userStatisticType, userStatisticMapping, returnColumns)
 		if err != nil {
 			return err
 		}
 		if len(wl) != 0 {
-			cache.query = fmt.Sprintf("INSERT INTO `Player` (`%s`) %%sVALUES (%s)%%s", strings.Join(wl, "`,`"), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
+			cache.query = fmt.Sprintf("INSERT INTO `UserStatistics` (`%s`) %%sVALUES (%s)%%s", strings.Join(wl, "`,`"), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
 		} else {
-			cache.query = "INSERT INTO `Player` () VALUES ()%s%s"
+			cache.query = "INSERT INTO `UserStatistics` () VALUES ()%s%s"
 		}
 
 		var queryOutput, queryReturning string
 
 		if len(cache.retMapping) != 0 {
-			cache.retQuery = fmt.Sprintf("SELECT `%s` FROM `Player` WHERE %s", strings.Join(returnColumns, "`,`"), strmangle.WhereClause("`", "`", 0, playerPrimaryKeyColumns))
+			cache.retQuery = fmt.Sprintf("SELECT `%s` FROM `UserStatistics` WHERE %s", strings.Join(returnColumns, "`,`"), strmangle.WhereClause("`", "`", 0, userStatisticPrimaryKeyColumns))
 		}
 
 		cache.query = fmt.Sprintf(cache.query, queryOutput, queryReturning)
@@ -1173,7 +1173,7 @@ func (o *Player) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 	result, err := exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
-		return errors.Wrap(err, "models: unable to insert into Player")
+		return errors.Wrap(err, "models: unable to insert into UserStatistics")
 	}
 
 	var lastID int64
@@ -1189,7 +1189,7 @@ func (o *Player) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 	}
 
 	o.ID = int(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == playerMapping["Id"] {
+	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userStatisticMapping["Id"] {
 		goto CacheNoHooks
 	}
 
@@ -1204,50 +1204,50 @@ func (o *Player) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 	}
 	err = exec.QueryRowContext(ctx, cache.retQuery, identifierCols...).Scan(queries.PtrsFromMapping(value, cache.retMapping)...)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for Player")
+		return errors.Wrap(err, "models: unable to populate default values for UserStatistics")
 	}
 
 CacheNoHooks:
 	if !cached {
-		playerInsertCacheMut.Lock()
-		playerInsertCache[key] = cache
-		playerInsertCacheMut.Unlock()
+		userStatisticInsertCacheMut.Lock()
+		userStatisticInsertCache[key] = cache
+		userStatisticInsertCacheMut.Unlock()
 	}
 
 	return o.doAfterInsertHooks(ctx, exec)
 }
 
-// Update uses an executor to update the Player.
+// Update uses an executor to update the UserStatistic.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Player) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (o *UserStatistic) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
 	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
 		return 0, err
 	}
 	key := makeCacheKey(columns, nil)
-	playerUpdateCacheMut.RLock()
-	cache, cached := playerUpdateCache[key]
-	playerUpdateCacheMut.RUnlock()
+	userStatisticUpdateCacheMut.RLock()
+	cache, cached := userStatisticUpdateCache[key]
+	userStatisticUpdateCacheMut.RUnlock()
 
 	if !cached {
 		wl := columns.UpdateColumnSet(
-			playerAllColumns,
-			playerPrimaryKeyColumns,
+			userStatisticAllColumns,
+			userStatisticPrimaryKeyColumns,
 		)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
 		}
 		if len(wl) == 0 {
-			return 0, errors.New("models: unable to update Player, could not build whitelist")
+			return 0, errors.New("models: unable to update UserStatistics, could not build whitelist")
 		}
 
-		cache.query = fmt.Sprintf("UPDATE `Player` SET %s WHERE %s",
+		cache.query = fmt.Sprintf("UPDATE `UserStatistics` SET %s WHERE %s",
 			strmangle.SetParamNames("`", "`", 0, wl),
-			strmangle.WhereClause("`", "`", 0, playerPrimaryKeyColumns),
+			strmangle.WhereClause("`", "`", 0, userStatisticPrimaryKeyColumns),
 		)
-		cache.valueMapping, err = queries.BindMapping(playerType, playerMapping, append(wl, playerPrimaryKeyColumns...))
+		cache.valueMapping, err = queries.BindMapping(userStatisticType, userStatisticMapping, append(wl, userStatisticPrimaryKeyColumns...))
 		if err != nil {
 			return 0, err
 		}
@@ -1263,42 +1263,42 @@ func (o *Player) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 	var result sql.Result
 	result, err = exec.ExecContext(ctx, cache.query, values...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update Player row")
+		return 0, errors.Wrap(err, "models: unable to update UserStatistics row")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by update for Player")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by update for UserStatistics")
 	}
 
 	if !cached {
-		playerUpdateCacheMut.Lock()
-		playerUpdateCache[key] = cache
-		playerUpdateCacheMut.Unlock()
+		userStatisticUpdateCacheMut.Lock()
+		userStatisticUpdateCache[key] = cache
+		userStatisticUpdateCacheMut.Unlock()
 	}
 
 	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q playerQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q userStatisticQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update all for Player")
+		return 0, errors.Wrap(err, "models: unable to update all for UserStatistics")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to retrieve rows affected for Player")
+		return 0, errors.Wrap(err, "models: unable to retrieve rows affected for UserStatistics")
 	}
 
 	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o PlayerSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (o UserStatisticSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1320,13 +1320,13 @@ func (o PlayerSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, c
 
 	// Append all of the primary key values for each column
 	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), playerPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userStatisticPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := fmt.Sprintf("UPDATE `Player` SET %s WHERE %s",
+	sql := fmt.Sprintf("UPDATE `UserStatistics` SET %s WHERE %s",
 		strmangle.SetParamNames("`", "`", 0, colNames),
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, playerPrimaryKeyColumns, len(o)))
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userStatisticPrimaryKeyColumns, len(o)))
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1335,33 +1335,33 @@ func (o PlayerSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, c
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to update all in player slice")
+		return 0, errors.Wrap(err, "models: unable to update all in userStatistic slice")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to retrieve rows affected all in update all player")
+		return 0, errors.Wrap(err, "models: unable to retrieve rows affected all in update all userStatistic")
 	}
 	return rowsAff, nil
 }
 
-var mySQLPlayerUniqueColumns = []string{
+var mySQLUserStatisticUniqueColumns = []string{
 	"Id",
 }
 
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *Player) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+func (o *UserStatistic) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no Player provided for upsert")
+		return errors.New("models: no UserStatistics provided for upsert")
 	}
 
 	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
 		return err
 	}
 
-	nzDefaults := queries.NonZeroDefaultSet(playerColumnsWithDefault, o)
-	nzUniques := queries.NonZeroDefaultSet(mySQLPlayerUniqueColumns, o)
+	nzDefaults := queries.NonZeroDefaultSet(userStatisticColumnsWithDefault, o)
+	nzUniques := queries.NonZeroDefaultSet(mySQLUserStatisticUniqueColumns, o)
 
 	if len(nzUniques) == 0 {
 		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
@@ -1389,43 +1389,43 @@ func (o *Player) Upsert(ctx context.Context, exec boil.ContextExecutor, updateCo
 	key := buf.String()
 	strmangle.PutBuffer(buf)
 
-	playerUpsertCacheMut.RLock()
-	cache, cached := playerUpsertCache[key]
-	playerUpsertCacheMut.RUnlock()
+	userStatisticUpsertCacheMut.RLock()
+	cache, cached := userStatisticUpsertCache[key]
+	userStatisticUpsertCacheMut.RUnlock()
 
 	var err error
 
 	if !cached {
 		insert, ret := insertColumns.InsertColumnSet(
-			playerAllColumns,
-			playerColumnsWithDefault,
-			playerColumnsWithoutDefault,
+			userStatisticAllColumns,
+			userStatisticColumnsWithDefault,
+			userStatisticColumnsWithoutDefault,
 			nzDefaults,
 		)
 
 		update := updateColumns.UpdateColumnSet(
-			playerAllColumns,
-			playerPrimaryKeyColumns,
+			userStatisticAllColumns,
+			userStatisticPrimaryKeyColumns,
 		)
 
 		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("models: unable to upsert Player, could not build update column list")
+			return errors.New("models: unable to upsert UserStatistics, could not build update column list")
 		}
 
 		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`Player`", update, insert)
+		cache.query = buildUpsertQueryMySQL(dialect, "`UserStatistics`", update, insert)
 		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `Player` WHERE %s",
+			"SELECT %s FROM `UserStatistics` WHERE %s",
 			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
 			strmangle.WhereClause("`", "`", 0, nzUniques),
 		)
 
-		cache.valueMapping, err = queries.BindMapping(playerType, playerMapping, insert)
+		cache.valueMapping, err = queries.BindMapping(userStatisticType, userStatisticMapping, insert)
 		if err != nil {
 			return err
 		}
 		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(playerType, playerMapping, ret)
+			cache.retMapping, err = queries.BindMapping(userStatisticType, userStatisticMapping, ret)
 			if err != nil {
 				return err
 			}
@@ -1447,7 +1447,7 @@ func (o *Player) Upsert(ctx context.Context, exec boil.ContextExecutor, updateCo
 	result, err := exec.ExecContext(ctx, cache.query, vals...)
 
 	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert for Player")
+		return errors.Wrap(err, "models: unable to upsert for UserStatistics")
 	}
 
 	var lastID int64
@@ -1464,13 +1464,13 @@ func (o *Player) Upsert(ctx context.Context, exec boil.ContextExecutor, updateCo
 	}
 
 	o.ID = int(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == playerMapping["Id"] {
+	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == userStatisticMapping["Id"] {
 		goto CacheNoHooks
 	}
 
-	uniqueMap, err = queries.BindMapping(playerType, playerMapping, nzUniques)
+	uniqueMap, err = queries.BindMapping(userStatisticType, userStatisticMapping, nzUniques)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to retrieve unique values for Player")
+		return errors.Wrap(err, "models: unable to retrieve unique values for UserStatistics")
 	}
 	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
 
@@ -1481,32 +1481,32 @@ func (o *Player) Upsert(ctx context.Context, exec boil.ContextExecutor, updateCo
 	}
 	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for Player")
+		return errors.Wrap(err, "models: unable to populate default values for UserStatistics")
 	}
 
 CacheNoHooks:
 	if !cached {
-		playerUpsertCacheMut.Lock()
-		playerUpsertCache[key] = cache
-		playerUpsertCacheMut.Unlock()
+		userStatisticUpsertCacheMut.Lock()
+		userStatisticUpsertCache[key] = cache
+		userStatisticUpsertCacheMut.Unlock()
 	}
 
 	return o.doAfterUpsertHooks(ctx, exec)
 }
 
-// Delete deletes a single Player record with an executor.
+// Delete deletes a single UserStatistic record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (o *Player) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (o *UserStatistic) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
-		return 0, errors.New("models: no Player provided for delete")
+		return 0, errors.New("models: no UserStatistic provided for delete")
 	}
 
 	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
 		return 0, err
 	}
 
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), playerPrimaryKeyMapping)
-	sql := "DELETE FROM `Player` WHERE `Id`=?"
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), userStatisticPrimaryKeyMapping)
+	sql := "DELETE FROM `UserStatistics` WHERE `Id`=?"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1515,12 +1515,12 @@ func (o *Player) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, 
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from Player")
+		return 0, errors.Wrap(err, "models: unable to delete from UserStatistics")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for Player")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for UserStatistics")
 	}
 
 	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
@@ -1531,33 +1531,33 @@ func (o *Player) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, 
 }
 
 // DeleteAll deletes all matching rows.
-func (q playerQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userStatisticQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
-		return 0, errors.New("models: no playerQuery provided for delete all")
+		return 0, errors.New("models: no userStatisticQuery provided for delete all")
 	}
 
 	queries.SetDelete(q.Query)
 
 	result, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from Player")
+		return 0, errors.Wrap(err, "models: unable to delete all from UserStatistics")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for Player")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for UserStatistics")
 	}
 
 	return rowsAff, nil
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (o PlayerSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (o UserStatisticSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
 
-	if len(playerBeforeDeleteHooks) != 0 {
+	if len(userStatisticBeforeDeleteHooks) != 0 {
 		for _, obj := range o {
 			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
 				return 0, err
@@ -1567,12 +1567,12 @@ func (o PlayerSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 
 	var args []interface{}
 	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), playerPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userStatisticPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "DELETE FROM `Player` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, playerPrimaryKeyColumns, len(o))
+	sql := "DELETE FROM `UserStatistics` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userStatisticPrimaryKeyColumns, len(o))
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1581,15 +1581,15 @@ func (o PlayerSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 	}
 	result, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from player slice")
+		return 0, errors.Wrap(err, "models: unable to delete all from userStatistic slice")
 	}
 
 	rowsAff, err := result.RowsAffected()
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for Player")
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for UserStatistics")
 	}
 
-	if len(playerAfterDeleteHooks) != 0 {
+	if len(userStatisticAfterDeleteHooks) != 0 {
 		for _, obj := range o {
 			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
 				return 0, err
@@ -1602,8 +1602,8 @@ func (o PlayerSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (o *Player) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindPlayer(ctx, exec, o.ID)
+func (o *UserStatistic) Reload(ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindUserStatistic(ctx, exec, o.ID)
 	if err != nil {
 		return err
 	}
@@ -1614,26 +1614,26 @@ func (o *Player) Reload(ctx context.Context, exec boil.ContextExecutor) error {
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (o *PlayerSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
+func (o *UserStatisticSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}
 
-	slice := PlayerSlice{}
+	slice := UserStatisticSlice{}
 	var args []interface{}
 	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), playerPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userStatisticPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "SELECT `Player`.* FROM `Player` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, playerPrimaryKeyColumns, len(*o))
+	sql := "SELECT `UserStatistics`.* FROM `UserStatistics` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userStatisticPrimaryKeyColumns, len(*o))
 
 	q := queries.Raw(sql, args...)
 
 	err := q.Bind(ctx, exec, &slice)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in PlayerSlice")
+		return errors.Wrap(err, "models: unable to reload all in UserStatisticSlice")
 	}
 
 	*o = slice
@@ -1641,10 +1641,10 @@ func (o *PlayerSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) 
 	return nil
 }
 
-// PlayerExists checks if the Player row exists.
-func PlayerExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+// UserStatisticExists checks if the UserStatistic row exists.
+func UserStatisticExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from `Player` where `Id`=? limit 1)"
+	sql := "select exists(select 1 from `UserStatistics` where `Id`=? limit 1)"
 
 	if boil.IsDebug(ctx) {
 		writer := boil.DebugWriterFrom(ctx)
@@ -1655,7 +1655,7 @@ func PlayerExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool,
 
 	err := row.Scan(&exists)
 	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if Player exists")
+		return false, errors.Wrap(err, "models: unable to check if UserStatistics exists")
 	}
 
 	return exists, nil

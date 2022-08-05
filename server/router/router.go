@@ -25,6 +25,18 @@ func Register(db *sql.DB) *gin.Engine {
 
 	routes := []HandlerEntry{
 		{
+			Path:   "user",
+			Method: http.MethodPost,
+			Functions: []gin.HandlerFunc{
+				CreateUserHandler(db),
+			},
+		},
+		{
+			Path:      "vote",
+			Method:    http.MethodPost,
+			Functions: []gin.HandlerFunc{},
+		},
+		{
 			Path:   "status",
 			Method: http.MethodGet,
 			Functions: []gin.HandlerFunc{

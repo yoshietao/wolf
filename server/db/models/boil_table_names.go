@@ -4,7 +4,19 @@
 package models
 
 var TableNames = struct {
-	Player string
+	CharacterR     string
+	Game           string
+	Model          string
+	ModelCharacter string
+	Player         string
+	User           string
+	UserStatistics string
 }{
-	Player: "Player",
+	CharacterR:     "CharacterR",
+	Game:           "Game",
+	Model:          "Model",
+	ModelCharacter: "ModelCharacter",
+	Player:         "Player",
+	User:           "User",
+	UserStatistics: "UserStatistics",
 }
