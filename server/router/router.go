@@ -32,6 +32,13 @@ func Register(db *sql.DB) *gin.Engine {
 			},
 		},
 		{
+			Path:   "login",
+			Method: http.MethodPost,
+			Functions: []gin.HandlerFunc{
+				UserLoginHandler(db),
+			},
+		},
+		{
 			Path:      "vote",
 			Method:    http.MethodPost,
 			Functions: []gin.HandlerFunc{},
