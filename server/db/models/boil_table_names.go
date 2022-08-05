@@ -11,6 +11,7 @@ var TableNames = struct {
 	Player         string
 	User           string
 	UserStatistics string
+	GooseDBVersion string
 }{
 	CharacterR:     "CharacterR",
 	Game:           "Game",
@@ -19,4 +20,5 @@ var TableNames = struct {
 	Player:         "Player",
 	User:           "User",
 	UserStatistics: "UserStatistics",
+	GooseDBVersion: "goose_db_version",
 }

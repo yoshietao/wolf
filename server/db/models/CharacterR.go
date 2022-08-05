@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -24,8 +23,8 @@ import (
 
 // CharacterR is an object representing the database table.
 type CharacterR struct {
-	ID   int         `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
-	Name null.String `boil:"Name" json:"Name,omitempty" toml:"Name" yaml:"Name,omitempty"`
+	ID   int    `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
+	Name string `boil:"Name" json:"Name" toml:"Name" yaml:"Name"`
 
 	R *characterRR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L characterRL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -72,36 +71,35 @@ func (w whereHelperint) NIN(slice []int) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-type whereHelpernull_String struct{ field string }
+type whereHelperstring struct{ field string }
 
-func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
+func (w whereHelperstring) EQ(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperstring) NEQ(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperstring) LT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperstring) LTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperstring) GT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperstring) GTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+func (w whereHelperstring) IN(slice []string) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
 }
-func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
+func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
-func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
 var CharacterRWhere = struct {
 	ID   whereHelperint
-	Name whereHelpernull_String
+	Name whereHelperstring
 }{
 	ID:   whereHelperint{field: "`CharacterR`.`Id`"},
-	Name: whereHelpernull_String{field: "`CharacterR`.`Name`"},
+	Name: whereHelperstring{field: "`CharacterR`.`Name`"},
 }
 
 // CharacterRRels is where relationship names are stored.
@@ -635,7 +633,7 @@ func (characterRL) LoadCharacterIdPlayers(ctx context.Context, e boil.ContextExe
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ID) {
+				if a == obj.ID {
 					continue Outer
 				}
 			}
@@ -693,7 +691,7 @@ func (characterRL) LoadCharacterIdPlayers(ctx context.Context, e boil.ContextExe
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.CharacterId) {
+			if local.ID == foreign.CharacterId {
 				local.R.CharacterIdPlayers = append(local.R.CharacterIdPlayers, foreign)
 				if foreign.R == nil {
 					foreign.R = &playerR{}
@@ -749,7 +747,7 @@ func (characterRL) LoadCharacterIdUserStatistics(ctx context.Context, e boil.Con
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ID) {
+				if a == obj.ID {
 					continue Outer
 				}
 			}
@@ -807,7 +805,7 @@ func (characterRL) LoadCharacterIdUserStatistics(ctx context.Context, e boil.Con
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.CharacterId) {
+			if local.ID == foreign.CharacterId {
 				local.R.CharacterIdUserStatistics = append(local.R.CharacterIdUserStatistics, foreign)
 				if foreign.R == nil {
 					foreign.R = &userStatisticR{}
@@ -882,7 +880,7 @@ func (o *CharacterR) AddCharacterIdPlayers(ctx context.Context, exec boil.Contex
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.CharacterId, o.ID)
+			rel.CharacterId = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -903,7 +901,7 @@ func (o *CharacterR) AddCharacterIdPlayers(ctx context.Context, exec boil.Contex
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.CharacterId, o.ID)
+			rel.CharacterId = o.ID
 		}
 	}
 
@@ -927,80 +925,6 @@ func (o *CharacterR) AddCharacterIdPlayers(ctx context.Context, exec boil.Contex
 	return nil
 }
 
-// SetCharacterIdPlayers removes all previously related items of the
-// CharacterR replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.CharacterIdCharacterR's CharacterIdPlayers accordingly.
-// Replaces o.R.CharacterIdPlayers with related.
-// Sets related.R.CharacterIdCharacterR's CharacterIdPlayers accordingly.
-func (o *CharacterR) SetCharacterIdPlayers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Player) error {
-	query := "update `Player` set `CharacterId` = null where `CharacterId` = ?"
-	values := []interface{}{o.ID}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.CharacterIdPlayers {
-			queries.SetScanner(&rel.CharacterId, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.CharacterIdCharacterR = nil
-		}
-		o.R.CharacterIdPlayers = nil
-	}
-
-	return o.AddCharacterIdPlayers(ctx, exec, insert, related...)
-}
-
-// RemoveCharacterIdPlayers relationships from objects passed in.
-// Removes related items from R.CharacterIdPlayers (uses pointer comparison, removal does not keep order)
-// Sets related.R.CharacterIdCharacterR.
-func (o *CharacterR) RemoveCharacterIdPlayers(ctx context.Context, exec boil.ContextExecutor, related ...*Player) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.CharacterId, nil)
-		if rel.R != nil {
-			rel.R.CharacterIdCharacterR = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("CharacterId")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.CharacterIdPlayers {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.CharacterIdPlayers)
-			if ln > 1 && i < ln-1 {
-				o.R.CharacterIdPlayers[i] = o.R.CharacterIdPlayers[ln-1]
-			}
-			o.R.CharacterIdPlayers = o.R.CharacterIdPlayers[:ln-1]
-			break
-		}
-	}
-
-	return nil
-}
-
 // AddCharacterIdUserStatistics adds the given related objects to the existing relationships
 // of the CharacterR, optionally inserting them as new records.
 // Appends related to o.R.CharacterIdUserStatistics.
@@ -1009,7 +933,7 @@ func (o *CharacterR) AddCharacterIdUserStatistics(ctx context.Context, exec boil
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.CharacterId, o.ID)
+			rel.CharacterId = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -1030,7 +954,7 @@ func (o *CharacterR) AddCharacterIdUserStatistics(ctx context.Context, exec boil
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.CharacterId, o.ID)
+			rel.CharacterId = o.ID
 		}
 	}
 
@@ -1051,80 +975,6 @@ func (o *CharacterR) AddCharacterIdUserStatistics(ctx context.Context, exec boil
 			rel.R.CharacterIdCharacterR = o
 		}
 	}
-	return nil
-}
-
-// SetCharacterIdUserStatistics removes all previously related items of the
-// CharacterR replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.CharacterIdCharacterR's CharacterIdUserStatistics accordingly.
-// Replaces o.R.CharacterIdUserStatistics with related.
-// Sets related.R.CharacterIdCharacterR's CharacterIdUserStatistics accordingly.
-func (o *CharacterR) SetCharacterIdUserStatistics(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserStatistic) error {
-	query := "update `UserStatistics` set `CharacterId` = null where `CharacterId` = ?"
-	values := []interface{}{o.ID}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.CharacterIdUserStatistics {
-			queries.SetScanner(&rel.CharacterId, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.CharacterIdCharacterR = nil
-		}
-		o.R.CharacterIdUserStatistics = nil
-	}
-
-	return o.AddCharacterIdUserStatistics(ctx, exec, insert, related...)
-}
-
-// RemoveCharacterIdUserStatistics relationships from objects passed in.
-// Removes related items from R.CharacterIdUserStatistics (uses pointer comparison, removal does not keep order)
-// Sets related.R.CharacterIdCharacterR.
-func (o *CharacterR) RemoveCharacterIdUserStatistics(ctx context.Context, exec boil.ContextExecutor, related ...*UserStatistic) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.CharacterId, nil)
-		if rel.R != nil {
-			rel.R.CharacterIdCharacterR = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("CharacterId")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.CharacterIdUserStatistics {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.CharacterIdUserStatistics)
-			if ln > 1 && i < ln-1 {
-				o.R.CharacterIdUserStatistics[i] = o.R.CharacterIdUserStatistics[ln-1]
-			}
-			o.R.CharacterIdUserStatistics = o.R.CharacterIdUserStatistics[:ln-1]
-			break
-		}
-	}
-
 	return nil
 }
 

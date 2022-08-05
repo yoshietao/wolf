@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -24,13 +23,13 @@ import (
 
 // UserStatistic is an object representing the database table.
 type UserStatistic struct {
-	ID          int         `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
-	UserId      null.Int    `boil:"UserId" json:"UserId,omitempty" toml:"UserId" yaml:"UserId,omitempty"`
-	GameId      null.Int    `boil:"GameId" json:"GameId,omitempty" toml:"GameId" yaml:"GameId,omitempty"`
-	Date        null.Time   `boil:"Date" json:"Date,omitempty" toml:"Date" yaml:"Date,omitempty"`
-	SeatId      null.Int    `boil:"SeatId" json:"SeatId,omitempty" toml:"SeatId" yaml:"SeatId,omitempty"`
-	CharacterId null.Int    `boil:"CharacterId" json:"CharacterId,omitempty" toml:"CharacterId" yaml:"CharacterId,omitempty"`
-	Result      null.String `boil:"Result" json:"Result,omitempty" toml:"Result" yaml:"Result,omitempty"`
+	ID          int       `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
+	UserId      int       `boil:"UserId" json:"UserId" toml:"UserId" yaml:"UserId"`
+	GameId      int       `boil:"GameId" json:"GameId" toml:"GameId" yaml:"GameId"`
+	Date        time.Time `boil:"Date" json:"Date" toml:"Date" yaml:"Date"`
+	SeatId      int       `boil:"SeatId" json:"SeatId" toml:"SeatId" yaml:"SeatId"`
+	CharacterId int       `boil:"CharacterId" json:"CharacterId" toml:"CharacterId" yaml:"CharacterId"`
+	Result      string    `boil:"Result" json:"Result" toml:"Result" yaml:"Result"`
 
 	R *userStatisticR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userStatisticL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -76,20 +75,20 @@ var UserStatisticTableColumns = struct {
 
 var UserStatisticWhere = struct {
 	ID          whereHelperint
-	UserId      whereHelpernull_Int
-	GameId      whereHelpernull_Int
-	Date        whereHelpernull_Time
-	SeatId      whereHelpernull_Int
-	CharacterId whereHelpernull_Int
-	Result      whereHelpernull_String
+	UserId      whereHelperint
+	GameId      whereHelperint
+	Date        whereHelpertime_Time
+	SeatId      whereHelperint
+	CharacterId whereHelperint
+	Result      whereHelperstring
 }{
 	ID:          whereHelperint{field: "`UserStatistics`.`Id`"},
-	UserId:      whereHelpernull_Int{field: "`UserStatistics`.`UserId`"},
-	GameId:      whereHelpernull_Int{field: "`UserStatistics`.`GameId`"},
-	Date:        whereHelpernull_Time{field: "`UserStatistics`.`Date`"},
-	SeatId:      whereHelpernull_Int{field: "`UserStatistics`.`SeatId`"},
-	CharacterId: whereHelpernull_Int{field: "`UserStatistics`.`CharacterId`"},
-	Result:      whereHelpernull_String{field: "`UserStatistics`.`Result`"},
+	UserId:      whereHelperint{field: "`UserStatistics`.`UserId`"},
+	GameId:      whereHelperint{field: "`UserStatistics`.`GameId`"},
+	Date:        whereHelpertime_Time{field: "`UserStatistics`.`Date`"},
+	SeatId:      whereHelperint{field: "`UserStatistics`.`SeatId`"},
+	CharacterId: whereHelperint{field: "`UserStatistics`.`CharacterId`"},
+	Result:      whereHelperstring{field: "`UserStatistics`.`Result`"},
 }
 
 // UserStatisticRels is where relationship names are stored.
@@ -491,9 +490,7 @@ func (userStatisticL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor
 		if object.R == nil {
 			object.R = &userStatisticR{}
 		}
-		if !queries.IsNil(object.UserId) {
-			args = append(args, object.UserId)
-		}
+		args = append(args, object.UserId)
 
 	} else {
 	Outer:
@@ -503,14 +500,12 @@ func (userStatisticL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.UserId) {
+				if a == obj.UserId {
 					continue Outer
 				}
 			}
 
-			if !queries.IsNil(obj.UserId) {
-				args = append(args, obj.UserId)
-			}
+			args = append(args, obj.UserId)
 
 		}
 	}
@@ -568,7 +563,7 @@ func (userStatisticL) LoadUserIdUser(ctx context.Context, e boil.ContextExecutor
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if queries.Equal(local.UserId, foreign.ID) {
+			if local.UserId == foreign.ID {
 				local.R.UserIdUser = foreign
 				if foreign.R == nil {
 					foreign.R = &userR{}
@@ -615,9 +610,7 @@ func (userStatisticL) LoadCharacterIdCharacterR(ctx context.Context, e boil.Cont
 		if object.R == nil {
 			object.R = &userStatisticR{}
 		}
-		if !queries.IsNil(object.CharacterId) {
-			args = append(args, object.CharacterId)
-		}
+		args = append(args, object.CharacterId)
 
 	} else {
 	Outer:
@@ -627,14 +620,12 @@ func (userStatisticL) LoadCharacterIdCharacterR(ctx context.Context, e boil.Cont
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.CharacterId) {
+				if a == obj.CharacterId {
 					continue Outer
 				}
 			}
 
-			if !queries.IsNil(obj.CharacterId) {
-				args = append(args, obj.CharacterId)
-			}
+			args = append(args, obj.CharacterId)
 
 		}
 	}
@@ -692,7 +683,7 @@ func (userStatisticL) LoadCharacterIdCharacterR(ctx context.Context, e boil.Cont
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if queries.Equal(local.CharacterId, foreign.ID) {
+			if local.CharacterId == foreign.ID {
 				local.R.CharacterIdCharacterR = foreign
 				if foreign.R == nil {
 					foreign.R = &characterRR{}
@@ -739,9 +730,7 @@ func (userStatisticL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor
 		if object.R == nil {
 			object.R = &userStatisticR{}
 		}
-		if !queries.IsNil(object.GameId) {
-			args = append(args, object.GameId)
-		}
+		args = append(args, object.GameId)
 
 	} else {
 	Outer:
@@ -751,14 +740,12 @@ func (userStatisticL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.GameId) {
+				if a == obj.GameId {
 					continue Outer
 				}
 			}
 
-			if !queries.IsNil(obj.GameId) {
-				args = append(args, obj.GameId)
-			}
+			args = append(args, obj.GameId)
 
 		}
 	}
@@ -816,7 +803,7 @@ func (userStatisticL) LoadGameIdGame(ctx context.Context, e boil.ContextExecutor
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if queries.Equal(local.GameId, foreign.ID) {
+			if local.GameId == foreign.ID {
 				local.R.GameIdGame = foreign
 				if foreign.R == nil {
 					foreign.R = &gameR{}
@@ -857,7 +844,7 @@ func (o *UserStatistic) SetUserIdUser(ctx context.Context, exec boil.ContextExec
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	queries.Assign(&o.UserId, related.ID)
+	o.UserId = related.ID
 	if o.R == nil {
 		o.R = &userStatisticR{
 			UserIdUser: related,
@@ -874,39 +861,6 @@ func (o *UserStatistic) SetUserIdUser(ctx context.Context, exec boil.ContextExec
 		related.R.UserIdUserStatistics = append(related.R.UserIdUserStatistics, o)
 	}
 
-	return nil
-}
-
-// RemoveUserIdUser relationship.
-// Sets o.R.UserIdUser to nil.
-// Removes o from all passed in related items' relationships struct.
-func (o *UserStatistic) RemoveUserIdUser(ctx context.Context, exec boil.ContextExecutor, related *User) error {
-	var err error
-
-	queries.SetScanner(&o.UserId, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("UserId")); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	if o.R != nil {
-		o.R.UserIdUser = nil
-	}
-	if related == nil || related.R == nil {
-		return nil
-	}
-
-	for i, ri := range related.R.UserIdUserStatistics {
-		if queries.Equal(o.UserId, ri.UserId) {
-			continue
-		}
-
-		ln := len(related.R.UserIdUserStatistics)
-		if ln > 1 && i < ln-1 {
-			related.R.UserIdUserStatistics[i] = related.R.UserIdUserStatistics[ln-1]
-		}
-		related.R.UserIdUserStatistics = related.R.UserIdUserStatistics[:ln-1]
-		break
-	}
 	return nil
 }
 
@@ -937,7 +891,7 @@ func (o *UserStatistic) SetCharacterIdCharacterR(ctx context.Context, exec boil.
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	queries.Assign(&o.CharacterId, related.ID)
+	o.CharacterId = related.ID
 	if o.R == nil {
 		o.R = &userStatisticR{
 			CharacterIdCharacterR: related,
@@ -954,39 +908,6 @@ func (o *UserStatistic) SetCharacterIdCharacterR(ctx context.Context, exec boil.
 		related.R.CharacterIdUserStatistics = append(related.R.CharacterIdUserStatistics, o)
 	}
 
-	return nil
-}
-
-// RemoveCharacterIdCharacterR relationship.
-// Sets o.R.CharacterIdCharacterR to nil.
-// Removes o from all passed in related items' relationships struct.
-func (o *UserStatistic) RemoveCharacterIdCharacterR(ctx context.Context, exec boil.ContextExecutor, related *CharacterR) error {
-	var err error
-
-	queries.SetScanner(&o.CharacterId, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("CharacterId")); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	if o.R != nil {
-		o.R.CharacterIdCharacterR = nil
-	}
-	if related == nil || related.R == nil {
-		return nil
-	}
-
-	for i, ri := range related.R.CharacterIdUserStatistics {
-		if queries.Equal(o.CharacterId, ri.CharacterId) {
-			continue
-		}
-
-		ln := len(related.R.CharacterIdUserStatistics)
-		if ln > 1 && i < ln-1 {
-			related.R.CharacterIdUserStatistics[i] = related.R.CharacterIdUserStatistics[ln-1]
-		}
-		related.R.CharacterIdUserStatistics = related.R.CharacterIdUserStatistics[:ln-1]
-		break
-	}
 	return nil
 }
 
@@ -1017,7 +938,7 @@ func (o *UserStatistic) SetGameIdGame(ctx context.Context, exec boil.ContextExec
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	queries.Assign(&o.GameId, related.ID)
+	o.GameId = related.ID
 	if o.R == nil {
 		o.R = &userStatisticR{
 			GameIdGame: related,
@@ -1034,39 +955,6 @@ func (o *UserStatistic) SetGameIdGame(ctx context.Context, exec boil.ContextExec
 		related.R.GameIdUserStatistics = append(related.R.GameIdUserStatistics, o)
 	}
 
-	return nil
-}
-
-// RemoveGameIdGame relationship.
-// Sets o.R.GameIdGame to nil.
-// Removes o from all passed in related items' relationships struct.
-func (o *UserStatistic) RemoveGameIdGame(ctx context.Context, exec boil.ContextExecutor, related *Game) error {
-	var err error
-
-	queries.SetScanner(&o.GameId, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("GameId")); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	if o.R != nil {
-		o.R.GameIdGame = nil
-	}
-	if related == nil || related.R == nil {
-		return nil
-	}
-
-	for i, ri := range related.R.GameIdUserStatistics {
-		if queries.Equal(o.GameId, ri.GameId) {
-			continue
-		}
-
-		ln := len(related.R.GameIdUserStatistics)
-		if ln > 1 && i < ln-1 {
-			related.R.GameIdUserStatistics[i] = related.R.GameIdUserStatistics[ln-1]
-		}
-		related.R.GameIdUserStatistics = related.R.GameIdUserStatistics[:ln-1]
-		break
-	}
 	return nil
 }
 

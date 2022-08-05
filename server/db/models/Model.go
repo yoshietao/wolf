@@ -48,29 +48,6 @@ var ModelTableColumns = struct {
 
 // Generated where
 
-type whereHelperstring struct{ field string }
-
-func (w whereHelperstring) EQ(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperstring) NEQ(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperstring) LT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperstring) LTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperstring) GT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperstring) GTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-func (w whereHelperstring) IN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
 var ModelWhere = struct {
 	ID   whereHelperint
 	Name whereHelperstring
@@ -472,7 +449,7 @@ func (modelL) LoadModelIdGames(ctx context.Context, e boil.ContextExecutor, sing
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ID) {
+				if a == obj.ID {
 					continue Outer
 				}
 			}
@@ -530,7 +507,7 @@ func (modelL) LoadModelIdGames(ctx context.Context, e boil.ContextExecutor, sing
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.ModelId) {
+			if local.ID == foreign.ModelId {
 				local.R.ModelIdGames = append(local.R.ModelIdGames, foreign)
 				if foreign.R == nil {
 					foreign.R = &gameR{}
@@ -666,7 +643,7 @@ func (o *Model) AddModelIdGames(ctx context.Context, exec boil.ContextExecutor, 
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.ModelId, o.ID)
+			rel.ModelId = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -687,7 +664,7 @@ func (o *Model) AddModelIdGames(ctx context.Context, exec boil.ContextExecutor, 
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.ModelId, o.ID)
+			rel.ModelId = o.ID
 		}
 	}
 
@@ -708,80 +685,6 @@ func (o *Model) AddModelIdGames(ctx context.Context, exec boil.ContextExecutor, 
 			rel.R.ModelIdModel = o
 		}
 	}
-	return nil
-}
-
-// SetModelIdGames removes all previously related items of the
-// Model replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.ModelIdModel's ModelIdGames accordingly.
-// Replaces o.R.ModelIdGames with related.
-// Sets related.R.ModelIdModel's ModelIdGames accordingly.
-func (o *Model) SetModelIdGames(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Game) error {
-	query := "update `Game` set `ModelId` = null where `ModelId` = ?"
-	values := []interface{}{o.ID}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.ModelIdGames {
-			queries.SetScanner(&rel.ModelId, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.ModelIdModel = nil
-		}
-		o.R.ModelIdGames = nil
-	}
-
-	return o.AddModelIdGames(ctx, exec, insert, related...)
-}
-
-// RemoveModelIdGames relationships from objects passed in.
-// Removes related items from R.ModelIdGames (uses pointer comparison, removal does not keep order)
-// Sets related.R.ModelIdModel.
-func (o *Model) RemoveModelIdGames(ctx context.Context, exec boil.ContextExecutor, related ...*Game) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.ModelId, nil)
-		if rel.R != nil {
-			rel.R.ModelIdModel = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("ModelId")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.ModelIdGames {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.ModelIdGames)
-			if ln > 1 && i < ln-1 {
-				o.R.ModelIdGames[i] = o.R.ModelIdGames[ln-1]
-			}
-			o.R.ModelIdGames = o.R.ModelIdGames[:ln-1]
-			break
-		}
-	}
-
 	return nil
 }
 

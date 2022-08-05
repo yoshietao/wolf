@@ -5,22 +5,25 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/volatiletech/null/v8"
+	"github.com/google/uuid"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/yoshietao/wolf/server/apimodels"
 	"github.com/yoshietao/wolf/server/db/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) error {
+func CreateUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(UserInput.PassWord), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return "", err
 	}
 
+	uuid := uuid.New()
+
 	dbUser := models.User{
-		UserName:     null.StringFrom(UserInput.UserName),
-		PasswordHash: null.StringFrom(string(hash)),
+		UUID:         uuid.String(),
+		UserName:     UserInput.UserName,
+		PasswordHash: string(hash),
 	}
 
 	err = dbUser.Insert(ctx, db, boil.Infer())
@@ -28,5 +31,5 @@ func CreateUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) 
 		fmt.Println("cannot insert user.")
 	}
 
-	return nil
+	return uuid.String(), nil
 }

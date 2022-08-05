@@ -18,13 +18,12 @@ func CreateUserHandler(db *sql.DB) gin.HandlerFunc {
 			return
 		}
 
-		err := service.CreateUser(ctx, db, req)
+		uuid, err := service.CreateUser(ctx, db, req)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
 		}
 
-		fmt.Println("Player name:", ctx.Value("player_name"))
-		fmt.Println("Seat ID:", ctx.Value("seat_id"))
+		ctx.SetCookie("session_token", uuid, 60*60*24, "/", "localhost", false, false)
 		ctx.JSON(http.StatusOK, gin.H{"result": fmt.Sprintf("user %s is registered", req.UserName)})
 	}
 }

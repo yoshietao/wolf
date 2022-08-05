@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -24,9 +23,10 @@ import (
 
 // User is an object representing the database table.
 type User struct {
-	ID           int         `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
-	UserName     null.String `boil:"UserName" json:"UserName,omitempty" toml:"UserName" yaml:"UserName,omitempty"`
-	PasswordHash null.String `boil:"PasswordHash" json:"PasswordHash,omitempty" toml:"PasswordHash" yaml:"PasswordHash,omitempty"`
+	ID           int    `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
+	UUID         string `boil:"UUID" json:"UUID" toml:"UUID" yaml:"UUID"`
+	UserName     string `boil:"UserName" json:"UserName" toml:"UserName" yaml:"UserName"`
+	PasswordHash string `boil:"PasswordHash" json:"PasswordHash" toml:"PasswordHash" yaml:"PasswordHash"`
 
 	R *userR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L userL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -34,20 +34,24 @@ type User struct {
 
 var UserColumns = struct {
 	ID           string
+	UUID         string
 	UserName     string
 	PasswordHash string
 }{
 	ID:           "Id",
+	UUID:         "UUID",
 	UserName:     "UserName",
 	PasswordHash: "PasswordHash",
 }
 
 var UserTableColumns = struct {
 	ID           string
+	UUID         string
 	UserName     string
 	PasswordHash string
 }{
 	ID:           "User.Id",
+	UUID:         "User.UUID",
 	UserName:     "User.UserName",
 	PasswordHash: "User.PasswordHash",
 }
@@ -56,12 +60,14 @@ var UserTableColumns = struct {
 
 var UserWhere = struct {
 	ID           whereHelperint
-	UserName     whereHelpernull_String
-	PasswordHash whereHelpernull_String
+	UUID         whereHelperstring
+	UserName     whereHelperstring
+	PasswordHash whereHelperstring
 }{
 	ID:           whereHelperint{field: "`User`.`Id`"},
-	UserName:     whereHelpernull_String{field: "`User`.`UserName`"},
-	PasswordHash: whereHelpernull_String{field: "`User`.`PasswordHash`"},
+	UUID:         whereHelperstring{field: "`User`.`UUID`"},
+	UserName:     whereHelperstring{field: "`User`.`UserName`"},
+	PasswordHash: whereHelperstring{field: "`User`.`PasswordHash`"},
 }
 
 // UserRels is where relationship names are stored.
@@ -102,8 +108,8 @@ func (r *userR) GetUserIdUserStatistics() UserStatisticSlice {
 type userL struct{}
 
 var (
-	userAllColumns            = []string{"Id", "UserName", "PasswordHash"}
-	userColumnsWithoutDefault = []string{"UserName", "PasswordHash"}
+	userAllColumns            = []string{"Id", "UUID", "UserName", "PasswordHash"}
+	userColumnsWithoutDefault = []string{"UUID", "UserName", "PasswordHash"}
 	userColumnsWithDefault    = []string{"Id"}
 	userPrimaryKeyColumns     = []string{"Id"}
 	userGeneratedColumns      = []string{}
@@ -457,7 +463,7 @@ func (userL) LoadUserIdPlayers(ctx context.Context, e boil.ContextExecutor, sing
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ID) {
+				if a == obj.ID {
 					continue Outer
 				}
 			}
@@ -515,7 +521,7 @@ func (userL) LoadUserIdPlayers(ctx context.Context, e boil.ContextExecutor, sing
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.UserId) {
+			if local.ID == foreign.UserId {
 				local.R.UserIdPlayers = append(local.R.UserIdPlayers, foreign)
 				if foreign.R == nil {
 					foreign.R = &playerR{}
@@ -571,7 +577,7 @@ func (userL) LoadUserIdUserStatistics(ctx context.Context, e boil.ContextExecuto
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ID) {
+				if a == obj.ID {
 					continue Outer
 				}
 			}
@@ -629,7 +635,7 @@ func (userL) LoadUserIdUserStatistics(ctx context.Context, e boil.ContextExecuto
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.UserId) {
+			if local.ID == foreign.UserId {
 				local.R.UserIdUserStatistics = append(local.R.UserIdUserStatistics, foreign)
 				if foreign.R == nil {
 					foreign.R = &userStatisticR{}
@@ -651,7 +657,7 @@ func (o *User) AddUserIdPlayers(ctx context.Context, exec boil.ContextExecutor, 
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.UserId, o.ID)
+			rel.UserId = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -672,7 +678,7 @@ func (o *User) AddUserIdPlayers(ctx context.Context, exec boil.ContextExecutor, 
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.UserId, o.ID)
+			rel.UserId = o.ID
 		}
 	}
 
@@ -696,80 +702,6 @@ func (o *User) AddUserIdPlayers(ctx context.Context, exec boil.ContextExecutor, 
 	return nil
 }
 
-// SetUserIdPlayers removes all previously related items of the
-// User replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.UserIdUser's UserIdPlayers accordingly.
-// Replaces o.R.UserIdPlayers with related.
-// Sets related.R.UserIdUser's UserIdPlayers accordingly.
-func (o *User) SetUserIdPlayers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Player) error {
-	query := "update `Player` set `UserId` = null where `UserId` = ?"
-	values := []interface{}{o.ID}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.UserIdPlayers {
-			queries.SetScanner(&rel.UserId, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.UserIdUser = nil
-		}
-		o.R.UserIdPlayers = nil
-	}
-
-	return o.AddUserIdPlayers(ctx, exec, insert, related...)
-}
-
-// RemoveUserIdPlayers relationships from objects passed in.
-// Removes related items from R.UserIdPlayers (uses pointer comparison, removal does not keep order)
-// Sets related.R.UserIdUser.
-func (o *User) RemoveUserIdPlayers(ctx context.Context, exec boil.ContextExecutor, related ...*Player) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.UserId, nil)
-		if rel.R != nil {
-			rel.R.UserIdUser = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("UserId")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.UserIdPlayers {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.UserIdPlayers)
-			if ln > 1 && i < ln-1 {
-				o.R.UserIdPlayers[i] = o.R.UserIdPlayers[ln-1]
-			}
-			o.R.UserIdPlayers = o.R.UserIdPlayers[:ln-1]
-			break
-		}
-	}
-
-	return nil
-}
-
 // AddUserIdUserStatistics adds the given related objects to the existing relationships
 // of the User, optionally inserting them as new records.
 // Appends related to o.R.UserIdUserStatistics.
@@ -778,7 +710,7 @@ func (o *User) AddUserIdUserStatistics(ctx context.Context, exec boil.ContextExe
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.UserId, o.ID)
+			rel.UserId = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -799,7 +731,7 @@ func (o *User) AddUserIdUserStatistics(ctx context.Context, exec boil.ContextExe
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.UserId, o.ID)
+			rel.UserId = o.ID
 		}
 	}
 
@@ -820,80 +752,6 @@ func (o *User) AddUserIdUserStatistics(ctx context.Context, exec boil.ContextExe
 			rel.R.UserIdUser = o
 		}
 	}
-	return nil
-}
-
-// SetUserIdUserStatistics removes all previously related items of the
-// User replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.UserIdUser's UserIdUserStatistics accordingly.
-// Replaces o.R.UserIdUserStatistics with related.
-// Sets related.R.UserIdUser's UserIdUserStatistics accordingly.
-func (o *User) SetUserIdUserStatistics(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserStatistic) error {
-	query := "update `UserStatistics` set `UserId` = null where `UserId` = ?"
-	values := []interface{}{o.ID}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.UserIdUserStatistics {
-			queries.SetScanner(&rel.UserId, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.UserIdUser = nil
-		}
-		o.R.UserIdUserStatistics = nil
-	}
-
-	return o.AddUserIdUserStatistics(ctx, exec, insert, related...)
-}
-
-// RemoveUserIdUserStatistics relationships from objects passed in.
-// Removes related items from R.UserIdUserStatistics (uses pointer comparison, removal does not keep order)
-// Sets related.R.UserIdUser.
-func (o *User) RemoveUserIdUserStatistics(ctx context.Context, exec boil.ContextExecutor, related ...*UserStatistic) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.UserId, nil)
-		if rel.R != nil {
-			rel.R.UserIdUser = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("UserId")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.UserIdUserStatistics {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.UserIdUserStatistics)
-			if ln > 1 && i < ln-1 {
-				o.R.UserIdUserStatistics[i] = o.R.UserIdUserStatistics[ln-1]
-			}
-			o.R.UserIdUserStatistics = o.R.UserIdUserStatistics[:ln-1]
-			break
-		}
-	}
-
 	return nil
 }
 

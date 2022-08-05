@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -24,10 +23,10 @@ import (
 
 // Game is an object representing the database table.
 type Game struct {
-	ID      int         `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
-	Name    null.String `boil:"Name" json:"Name,omitempty" toml:"Name" yaml:"Name,omitempty"`
-	ModelId null.Int    `boil:"ModelId" json:"ModelId,omitempty" toml:"ModelId" yaml:"ModelId,omitempty"`
-	Date    null.Time   `boil:"Date" json:"Date,omitempty" toml:"Date" yaml:"Date,omitempty"`
+	ID      int       `boil:"Id" json:"Id" toml:"Id" yaml:"Id"`
+	Name    string    `boil:"Name" json:"Name" toml:"Name" yaml:"Name"`
+	ModelId int       `boil:"ModelId" json:"ModelId" toml:"ModelId" yaml:"ModelId"`
+	Date    time.Time `boil:"Date" json:"Date" toml:"Date" yaml:"Date"`
 
 	R *gameR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L gameL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -59,64 +58,37 @@ var GameTableColumns = struct {
 
 // Generated where
 
-type whereHelpernull_Int struct{ field string }
+type whereHelpertime_Time struct{ field string }
 
-func (w whereHelpernull_Int) EQ(x null.Int) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
+func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.EQ, x)
 }
-func (w whereHelpernull_Int) NEQ(x null.Int) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
+func (w whereHelpertime_Time) NEQ(x time.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.NEQ, x)
 }
-func (w whereHelpernull_Int) LT(x null.Int) qm.QueryMod {
+func (w whereHelpertime_Time) LT(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LT, x)
 }
-func (w whereHelpernull_Int) LTE(x null.Int) qm.QueryMod {
+func (w whereHelpertime_Time) LTE(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.LTE, x)
 }
-func (w whereHelpernull_Int) GT(x null.Int) qm.QueryMod {
+func (w whereHelpertime_Time) GT(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GT, x)
 }
-func (w whereHelpernull_Int) GTE(x null.Int) qm.QueryMod {
+func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
-
-func (w whereHelpernull_Int) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_Int) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-
-type whereHelpernull_Time struct{ field string }
-
-func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_Time) NEQ(x null.Time) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_Time) LT(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_Time) LTE(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_Time) GT(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_Time) GTE(x null.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
 var GameWhere = struct {
 	ID      whereHelperint
-	Name    whereHelpernull_String
-	ModelId whereHelpernull_Int
-	Date    whereHelpernull_Time
+	Name    whereHelperstring
+	ModelId whereHelperint
+	Date    whereHelpertime_Time
 }{
 	ID:      whereHelperint{field: "`Game`.`Id`"},
-	Name:    whereHelpernull_String{field: "`Game`.`Name`"},
-	ModelId: whereHelpernull_Int{field: "`Game`.`ModelId`"},
-	Date:    whereHelpernull_Time{field: "`Game`.`Date`"},
+	Name:    whereHelperstring{field: "`Game`.`Name`"},
+	ModelId: whereHelperint{field: "`Game`.`ModelId`"},
+	Date:    whereHelpertime_Time{field: "`Game`.`Date`"},
 }
 
 // GameRels is where relationship names are stored.
@@ -524,9 +496,7 @@ func (gameL) LoadModelIdModel(ctx context.Context, e boil.ContextExecutor, singu
 		if object.R == nil {
 			object.R = &gameR{}
 		}
-		if !queries.IsNil(object.ModelId) {
-			args = append(args, object.ModelId)
-		}
+		args = append(args, object.ModelId)
 
 	} else {
 	Outer:
@@ -536,14 +506,12 @@ func (gameL) LoadModelIdModel(ctx context.Context, e boil.ContextExecutor, singu
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ModelId) {
+				if a == obj.ModelId {
 					continue Outer
 				}
 			}
 
-			if !queries.IsNil(obj.ModelId) {
-				args = append(args, obj.ModelId)
-			}
+			args = append(args, obj.ModelId)
 
 		}
 	}
@@ -601,7 +569,7 @@ func (gameL) LoadModelIdModel(ctx context.Context, e boil.ContextExecutor, singu
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if queries.Equal(local.ModelId, foreign.ID) {
+			if local.ModelId == foreign.ID {
 				local.R.ModelIdModel = foreign
 				if foreign.R == nil {
 					foreign.R = &modelR{}
@@ -657,7 +625,7 @@ func (gameL) LoadGameIdPlayers(ctx context.Context, e boil.ContextExecutor, sing
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ID) {
+				if a == obj.ID {
 					continue Outer
 				}
 			}
@@ -715,7 +683,7 @@ func (gameL) LoadGameIdPlayers(ctx context.Context, e boil.ContextExecutor, sing
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.GameId) {
+			if local.ID == foreign.GameId {
 				local.R.GameIdPlayers = append(local.R.GameIdPlayers, foreign)
 				if foreign.R == nil {
 					foreign.R = &playerR{}
@@ -771,7 +739,7 @@ func (gameL) LoadGameIdUserStatistics(ctx context.Context, e boil.ContextExecuto
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.ID) {
+				if a == obj.ID {
 					continue Outer
 				}
 			}
@@ -829,7 +797,7 @@ func (gameL) LoadGameIdUserStatistics(ctx context.Context, e boil.ContextExecuto
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.ID, foreign.GameId) {
+			if local.ID == foreign.GameId {
 				local.R.GameIdUserStatistics = append(local.R.GameIdUserStatistics, foreign)
 				if foreign.R == nil {
 					foreign.R = &userStatisticR{}
@@ -870,7 +838,7 @@ func (o *Game) SetModelIdModel(ctx context.Context, exec boil.ContextExecutor, i
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	queries.Assign(&o.ModelId, related.ID)
+	o.ModelId = related.ID
 	if o.R == nil {
 		o.R = &gameR{
 			ModelIdModel: related,
@@ -890,39 +858,6 @@ func (o *Game) SetModelIdModel(ctx context.Context, exec boil.ContextExecutor, i
 	return nil
 }
 
-// RemoveModelIdModel relationship.
-// Sets o.R.ModelIdModel to nil.
-// Removes o from all passed in related items' relationships struct.
-func (o *Game) RemoveModelIdModel(ctx context.Context, exec boil.ContextExecutor, related *Model) error {
-	var err error
-
-	queries.SetScanner(&o.ModelId, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("ModelId")); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	if o.R != nil {
-		o.R.ModelIdModel = nil
-	}
-	if related == nil || related.R == nil {
-		return nil
-	}
-
-	for i, ri := range related.R.ModelIdGames {
-		if queries.Equal(o.ModelId, ri.ModelId) {
-			continue
-		}
-
-		ln := len(related.R.ModelIdGames)
-		if ln > 1 && i < ln-1 {
-			related.R.ModelIdGames[i] = related.R.ModelIdGames[ln-1]
-		}
-		related.R.ModelIdGames = related.R.ModelIdGames[:ln-1]
-		break
-	}
-	return nil
-}
-
 // AddGameIdPlayers adds the given related objects to the existing relationships
 // of the Game, optionally inserting them as new records.
 // Appends related to o.R.GameIdPlayers.
@@ -931,7 +866,7 @@ func (o *Game) AddGameIdPlayers(ctx context.Context, exec boil.ContextExecutor, 
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.GameId, o.ID)
+			rel.GameId = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -952,7 +887,7 @@ func (o *Game) AddGameIdPlayers(ctx context.Context, exec boil.ContextExecutor, 
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.GameId, o.ID)
+			rel.GameId = o.ID
 		}
 	}
 
@@ -976,80 +911,6 @@ func (o *Game) AddGameIdPlayers(ctx context.Context, exec boil.ContextExecutor, 
 	return nil
 }
 
-// SetGameIdPlayers removes all previously related items of the
-// Game replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.GameIdGame's GameIdPlayers accordingly.
-// Replaces o.R.GameIdPlayers with related.
-// Sets related.R.GameIdGame's GameIdPlayers accordingly.
-func (o *Game) SetGameIdPlayers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Player) error {
-	query := "update `Player` set `GameId` = null where `GameId` = ?"
-	values := []interface{}{o.ID}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.GameIdPlayers {
-			queries.SetScanner(&rel.GameId, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.GameIdGame = nil
-		}
-		o.R.GameIdPlayers = nil
-	}
-
-	return o.AddGameIdPlayers(ctx, exec, insert, related...)
-}
-
-// RemoveGameIdPlayers relationships from objects passed in.
-// Removes related items from R.GameIdPlayers (uses pointer comparison, removal does not keep order)
-// Sets related.R.GameIdGame.
-func (o *Game) RemoveGameIdPlayers(ctx context.Context, exec boil.ContextExecutor, related ...*Player) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.GameId, nil)
-		if rel.R != nil {
-			rel.R.GameIdGame = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("GameId")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.GameIdPlayers {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.GameIdPlayers)
-			if ln > 1 && i < ln-1 {
-				o.R.GameIdPlayers[i] = o.R.GameIdPlayers[ln-1]
-			}
-			o.R.GameIdPlayers = o.R.GameIdPlayers[:ln-1]
-			break
-		}
-	}
-
-	return nil
-}
-
 // AddGameIdUserStatistics adds the given related objects to the existing relationships
 // of the Game, optionally inserting them as new records.
 // Appends related to o.R.GameIdUserStatistics.
@@ -1058,7 +919,7 @@ func (o *Game) AddGameIdUserStatistics(ctx context.Context, exec boil.ContextExe
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.GameId, o.ID)
+			rel.GameId = o.ID
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -1079,7 +940,7 @@ func (o *Game) AddGameIdUserStatistics(ctx context.Context, exec boil.ContextExe
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.GameId, o.ID)
+			rel.GameId = o.ID
 		}
 	}
 
@@ -1100,80 +961,6 @@ func (o *Game) AddGameIdUserStatistics(ctx context.Context, exec boil.ContextExe
 			rel.R.GameIdGame = o
 		}
 	}
-	return nil
-}
-
-// SetGameIdUserStatistics removes all previously related items of the
-// Game replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.GameIdGame's GameIdUserStatistics accordingly.
-// Replaces o.R.GameIdUserStatistics with related.
-// Sets related.R.GameIdGame's GameIdUserStatistics accordingly.
-func (o *Game) SetGameIdUserStatistics(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserStatistic) error {
-	query := "update `UserStatistics` set `GameId` = null where `GameId` = ?"
-	values := []interface{}{o.ID}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.GameIdUserStatistics {
-			queries.SetScanner(&rel.GameId, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.GameIdGame = nil
-		}
-		o.R.GameIdUserStatistics = nil
-	}
-
-	return o.AddGameIdUserStatistics(ctx, exec, insert, related...)
-}
-
-// RemoveGameIdUserStatistics relationships from objects passed in.
-// Removes related items from R.GameIdUserStatistics (uses pointer comparison, removal does not keep order)
-// Sets related.R.GameIdGame.
-func (o *Game) RemoveGameIdUserStatistics(ctx context.Context, exec boil.ContextExecutor, related ...*UserStatistic) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.GameId, nil)
-		if rel.R != nil {
-			rel.R.GameIdGame = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("GameId")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.GameIdUserStatistics {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.GameIdUserStatistics)
-			if ln > 1 && i < ln-1 {
-				o.R.GameIdUserStatistics[i] = o.R.GameIdUserStatistics[ln-1]
-			}
-			o.R.GameIdUserStatistics = o.R.GameIdUserStatistics[:ln-1]
-			break
-		}
-	}
-
 	return nil
 }
 
