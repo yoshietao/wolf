@@ -12,17 +12,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) (string, error) {
+func CreateUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(UserInput.PassWord), bcrypt.DefaultCost)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	dbUser, err := models.Users(models.UserWhere.UserName.EQ(UserInput.UserName)).One(ctx, db)
 	if err != nil {
-		return "", fmt.Errorf("cannot retrieve user info: %s", err.Error())
+		return fmt.Errorf("cannot retrieve user info: %s", err.Error())
 	} else if dbUser != nil {
-		return "", fmt.Errorf("user name %s already exists in the databse, try login", UserInput.UserName)
+		return fmt.Errorf("user name %s already exists in the databse, try login", UserInput.UserName)
 	}
 
 	uuid := uuid.New()
@@ -38,7 +38,7 @@ func CreateUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) 
 		fmt.Println("cannot insert user.")
 	}
 
-	return uuid.String(), nil
+	return nil
 }
 
 // TODO: consider return only error for either username/password error

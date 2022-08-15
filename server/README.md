@@ -13,3 +13,8 @@ In-game:
 Post-game:
 1. run the statistic and store win/loss for each player
 2. Delete the game play history
+
+
+
+Next:
+seat endpoint, can select seat Authz

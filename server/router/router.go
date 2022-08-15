@@ -8,7 +8,9 @@ import (
 )
 
 const (
-	RouterGroupV1 string = "wolf/api/v1"
+	RouterGroupV1  string = "wolf/api/v1"
+	SessionTokenId string = "session-id"
+	UserKey        string = "user"
 )
 
 type HandlerEntry struct {
@@ -22,6 +24,9 @@ func Register(db *sql.DB) *gin.Engine {
 	r := gin.New()
 	// Todo: customer logger
 	r.Use(gin.Logger(), gin.Recovery())
+
+	// Authn: get and set session token
+	authn := AuthnticationMiddleware(db)
 
 	routes := []HandlerEntry{
 		{
@@ -39,9 +44,12 @@ func Register(db *sql.DB) *gin.Engine {
 			},
 		},
 		{
-			Path:      "vote",
-			Method:    http.MethodPost,
-			Functions: []gin.HandlerFunc{},
+			Path:   "seat",
+			Method: http.MethodPost,
+			Functions: []gin.HandlerFunc{
+				authn,
+				SelectSeatHandler(db),
+			},
 		},
 		{
 			Path:   "status",
