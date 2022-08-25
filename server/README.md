@@ -17,4 +17,7 @@ Post-game:
 
 
 Next:
-seat endpoint, can select seat Authz
+V | seat |seat endpoint
+X | seat | can select seat Authz
+X | seat | input game id to make sure player number 
+X | game | create game endpoint

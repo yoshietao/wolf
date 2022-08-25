@@ -2,7 +2,6 @@ package router
 
 import (
 	"database/sql"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,18 +11,18 @@ import (
 
 func SelectSeatHandler(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		var req apimodels.UserInput
-		if err := ctx.ShouldBindJSON(&req); err != nil {
+		var player apimodels.PlayerInput
+		if err := ctx.ShouldBindJSON(&player); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		err := service.CreateUser(ctx, db, req)
+		err := service.SelectSeat(ctx, db, player.SeatId)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
 			return
 		}
 
-		ctx.JSON(http.StatusOK, gin.H{"result": fmt.Sprintf("user %s is registered", req.UserName)})
+		// ctx.JSON(http.StatusOK, gin.H{"result": fmt.Sprintf("user %s is registered", req.UserName)})
 	}
 }

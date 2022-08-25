@@ -19,7 +19,7 @@ func CreateUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) 
 	}
 
 	dbUser, err := models.Users(models.UserWhere.UserName.EQ(UserInput.UserName)).One(ctx, db)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return fmt.Errorf("cannot retrieve user info: %s", err.Error())
 	} else if dbUser != nil {
 		return fmt.Errorf("user name %s already exists in the databse, try login", UserInput.UserName)
@@ -54,6 +54,8 @@ func LoginUser(ctx context.Context, db *sql.DB, UserInput apimodels.UserInput) (
 	if err = (bcrypt.CompareHashAndPassword([]byte(dbUser.PasswordHash), []byte(UserInput.PassWord))); err != nil {
 		return "", fmt.Errorf("password is incorrect")
 	}
+
+	fmt.Println(fmt.Sprintf("user %s logged in", dbUser.UUID))
 
 	return dbUser.UUID, nil
 }

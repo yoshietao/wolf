@@ -2,9 +2,12 @@ package router
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/yoshietao/wolf/server/authz"
 	"github.com/yoshietao/wolf/server/db/models"
 )
 
@@ -16,12 +19,14 @@ func AuthnticationMiddleware(db *sql.DB) gin.HandlerFunc {
 			sessionToken = cookie.Value
 		}
 
-		user, err := models.Users(models.UserWhere.UUID.EQ(sessionToken)).One(ctx, db)
+		user, err := models.Users(models.UserWhere.UUID.EQ(sessionToken), qm.Load(models.UserRels.UserIdPlayers)).One(ctx, db)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, err)
 			return
 		}
 
-		ctx.Set(UserKey, user)
+		fmt.Println("User", user.UserName, user.R.UserIdPlayers)
+
+		ctx.Set(authz.UserKey, user)
 	}
 }

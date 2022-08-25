@@ -10,7 +10,6 @@ import (
 const (
 	RouterGroupV1  string = "wolf/api/v1"
 	SessionTokenId string = "session-id"
-	UserKey        string = "user"
 )
 
 type HandlerEntry struct {
